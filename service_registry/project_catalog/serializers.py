@@ -166,3 +166,9 @@ class ProjectDocumentSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProjectDocument
         fields ="__all__"
+    
+    #Sterilizer of the model Priority
+class HistoryOfChangeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = HistoryOfChange
+        fields = "__all__"
