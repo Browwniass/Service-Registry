@@ -20,10 +20,10 @@ import json
 def log_model_change(sender, instance, **kwargs):
     content_type = ContentType.objects.get_for_model(sender)
 
-    if content_type.app_label == 'project_catalog':
-        not_logging_sender = [HistoryOfChange, ChangeLayerState, ChangeProjectState]
-        print(sender)
+    if content_type.app_label == 'project_catalog':#Checking for relevance to my models
+        not_logging_sender = [HistoryOfChange, ChangeLayerState, ChangeProjectState]#Non-logable models
         if (kwargs['signal'] == post_save or kwargs['signal'] == post_delete ) and not(sender in not_logging_sender):
-            json_data = json.dumps(model_to_dict(instance), default=str)
+            json_data = json.dumps(model_to_dict(instance), default=str)#Conversion to json
+            #Saving to history
             HistoryOfChange.objects.create(content_object=content_type, value=json_data, changer=current_request().user, date=timezone.localtime(timezone.now()))
     
