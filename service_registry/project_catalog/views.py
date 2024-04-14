@@ -9,13 +9,14 @@ from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated
 #from .permissions import IsFullOrOther
 from rest_framework import generics
+from rest_framework.decorators import action
 
-from .metadata import OptionWithChoices
+from .utils import getRelatedFields
+#from .metadata import OptionWithChoices
 from .permissions import *
 import datetime
 from django.utils import timezone
 from rest_framework import viewsets
-
 
 class UserRegistrationView(APIView):
     def post(self, request):
@@ -132,8 +133,14 @@ class ProjectAPI(viewsets.ModelViewSet):
     permission_classes = [IsAdminOrReadOnly]
     queryset = Project.objects.all().select_related("priority", "complexity", "project_type", "quarter", "state", "stack")
     serializer_class = ProjectSerializer
-    metadata_class = OptionWithChoices
- 
+    
+    #Getting all possible options to select in fields that involve selecting from existing table values    @action(detail=False, methods=['get'])
+    @action(detail=False, methods=['get'])
+    def list_choice_data(self, request):
+        model = self.queryset.model
+        nested_serializers = getRelatedFields(model)#Getting all the options for a given model
+        return Response({'choices': nested_serializers})#Sending
+    
     def get_queryset(self):
         if not(self.request.user.is_anonymous):
             try:
@@ -205,3 +212,23 @@ class HistoryOfChangeAPI(viewsets.ModelViewSet):
     permission_classes = [AdminOnly]
     queryset = HistoryOfChange.objects.all()
     serializer_class = HistoryOfChangeSerializer
+
+#Вывод TeamMember
+class TeamMemberAPIList(viewsets.ModelViewSet):
+    queryset = TeamMember.objects.all()
+    serializer_class = TeamMemberSerializer
+
+    #Getting all possible options to select in fields that involve selecting from existing table values    @action(detail=False, methods=['get'])
+    @action(detail=False, methods=['get'])
+    def list_choice_data(self, request):
+        model = self.queryset.model
+        nested_serializers = getRelatedFields(model)#Getting all the options for a given model
+        return Response({'choices': nested_serializers})#Sending
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        stack_instance = Stack.objects.get(pk=instance.stack.pk).elements.all()
+        stack_serializer = StackElementSerializer(instance=stack_instance, many=True)
+        return Response({'employees': serializer.data,
+                         'stacks': stack_serializer.data})

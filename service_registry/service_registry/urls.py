@@ -26,6 +26,7 @@ router.register(r'layers', LayerAPI)
 router.register(r'users', UserAPI)
 router.register(r'observers', ObserverAPI)
 router.register(r'history', HistoryOfChangeAPI)
+router.register(r'employees', TeamMemberAPIList)
 
 urlpatterns = [
     path('admin/', admin.site.urls),

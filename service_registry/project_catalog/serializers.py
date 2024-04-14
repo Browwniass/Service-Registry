@@ -32,6 +32,7 @@ class TeamMemberSerializer(serializers.ModelSerializer):
         model = TeamMember
         fields = "__all__"
 
+
 #Sterilizer of the model ProjectEmployeе
 class ProjectEmployeеSerializer(serializers.ModelSerializer):
     class Meta:
@@ -42,7 +43,7 @@ class ProjectEmployeеSerializer(serializers.ModelSerializer):
 class PrioritySerializer(serializers.ModelSerializer):
     class Meta:
         model = Priority
-        fields = ["name"]
+        fields = "__all__"
 
 #Sterilizer of the model Project
 class ProjectSerializer(serializers.ModelSerializer):
@@ -161,14 +162,26 @@ class CommentsFileSerializer(serializers.ModelSerializer):
         model = CommentsFile
         fields ="__all__"
 
-#Sterilizer of the model ProjectDocument
+#Serializer of the model ProjectDocument
 class ProjectDocumentSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProjectDocument
         fields ="__all__"
     
-    #Sterilizer of the model Priority
+#Sterilizer of the model Priority
 class HistoryOfChangeSerializer(serializers.ModelSerializer):
     class Meta:
         model = HistoryOfChange
+        fields = "__all__"
+
+#Serializer of the model Stack
+class StackSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Stack
+        fields = "__all__"
+
+#Serializer of the model StackElement
+class StackElementSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StackElement
         fields = "__all__"

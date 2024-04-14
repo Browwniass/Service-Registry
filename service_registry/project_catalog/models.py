@@ -179,7 +179,7 @@ class TeamMember(models.Model):
     email = models.EmailField(_('email addres'), unique=True) 
     is_archived = models.BooleanField(default=False)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True, related_name="team_member_account")
-    stack = models.ManyToManyField(Stack)
+    stack = models.ForeignKey(Stack, on_delete=models.PROTECT)
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}[{self.email}]"
