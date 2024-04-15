@@ -47,6 +47,16 @@ class ProjectSerializer(serializers.ModelSerializer):
         model = Project 
         fields = "__all__"
 
+    #Presentation of projects in a readable form when sending
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation['priority'] = PrioritySerializer(instance=instance.priority).data
+        representation['complexity'] = ProjectComplexitySerializer(instance=instance.complexity).data
+        representation['project_type'] = ProjectTypeSerializer(instance=instance.project_type).data
+        representation['quarter'] = QuarterSerializer(instance=instance.quarter).data
+        representation['state'] = ProjectStateSerializer(instance=instance.state).data
+        representation['stack'] = StackSerializer(instance=instance.stack).data
+        return representation
 
     def update(self, instance, validated_data):
         try:
@@ -185,3 +195,8 @@ class TeamMemberSerializer(serializers.ModelSerializer):
         model = TeamMember
         fields = "__all__"
     
+    #Presentation of projects in a readable form when sending
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation['stack'] = StackSerializer(instance=instance.stack).data
+        return representation
