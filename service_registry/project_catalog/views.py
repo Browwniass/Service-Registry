@@ -1,3 +1,4 @@
+import sys
 from project_catalog.models import *
 from project_catalog.serializers import *
 from django.contrib.auth import authenticate, login
@@ -10,7 +11,7 @@ from rest_framework.permissions import IsAuthenticated
 #from .permissions import IsFullOrOther
 from rest_framework import generics
 from rest_framework.decorators import action
-
+from django.db.models.fields.related import ForeignKey
 from .utils import getRelatedFields
 #from .metadata import OptionWithChoices
 from .permissions import *
@@ -131,7 +132,7 @@ class QuarterAPIDetail(generics.RetrieveUpdateDestroyAPIView):
 
 class ProjectAPI(viewsets.ModelViewSet):
     permission_classes = [IsAdminOrReadOnly]
-    queryset = Project.objects.all().select_related("priority", "complexity", "project_type", "quarter", "state", "stack")
+    queryset = Project.objects.all()
     serializer_class = ProjectSerializer
     
     #Getting all possible options to select in fields that involve selecting from existing table values    @action(detail=False, methods=['get'])
@@ -141,6 +142,8 @@ class ProjectAPI(viewsets.ModelViewSet):
         nested_serializers = getRelatedFields(model)#Getting all the options for a given model
         return Response({'choices': nested_serializers})#Sending
     
+
+
     def get_queryset(self):
         if not(self.request.user.is_anonymous):
             try:
@@ -224,11 +227,3 @@ class TeamMemberAPIList(viewsets.ModelViewSet):
         model = self.queryset.model
         nested_serializers = getRelatedFields(model)#Getting all the options for a given model
         return Response({'choices': nested_serializers})#Sending
-
-    def retrieve(self, request, *args, **kwargs):
-        instance = self.get_object()
-        serializer = self.get_serializer(instance)
-        stack_instance = Stack.objects.get(pk=instance.stack.pk).elements.all()
-        stack_serializer = StackElementSerializer(instance=stack_instance, many=True)
-        return Response({'employees': serializer.data,
-                         'stacks': stack_serializer.data})

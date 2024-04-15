@@ -26,11 +26,7 @@ class ObserverSerializer(serializers.ModelSerializer):
         return data
 
 
-#Sterilizer of the TeamMember model
-class TeamMemberSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = TeamMember
-        fields = "__all__"
+
 
 
 #Sterilizer of the model ProjectEmployeе
@@ -51,11 +47,6 @@ class ProjectSerializer(serializers.ModelSerializer):
         model = Project 
         fields = "__all__"
 
-    #Presentation of projects in a readable form when sending
-    def to_representation(self, instance):
-        representation = super().to_representation(instance)
-        representation['priority'] = instance.priority.name
-        return representation
 
     def update(self, instance, validated_data):
         try:
@@ -174,14 +165,23 @@ class HistoryOfChangeSerializer(serializers.ModelSerializer):
         model = HistoryOfChange
         fields = "__all__"
 
-#Serializer of the model Stack
-class StackSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Stack
-        fields = "__all__"
-
 #Serializer of the model StackElement
 class StackElementSerializer(serializers.ModelSerializer):
     class Meta:
         model = StackElement
         fields = "__all__"
+
+#Serializer of the model Stack
+class StackSerializer(serializers.ModelSerializer):
+    elements = StackElementSerializer(many=True)
+    class Meta:
+        model = Stack
+        fields = "__all__"
+
+
+#Serializer of the TeamMember model
+class TeamMemberSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TeamMember
+        fields = "__all__"
+    

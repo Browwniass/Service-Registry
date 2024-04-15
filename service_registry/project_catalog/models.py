@@ -4,7 +4,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 import re
 from django.core.exceptions import ValidationError
 from django.db.models.signals import pre_save
@@ -114,7 +114,8 @@ class Project(models.Model):
     project_tasks = models.TextField(blank=True)
     project_functionality = models.TextField(blank=True)
     launch_date = models.DateField(null=True, blank=True)
-
+    history = GenericRelation("HistoryOfChange")
+    
     def __str__(self):
         return f"{self.name}[{self.short_name}]"
     
@@ -310,7 +311,7 @@ class ProjectDocument(models.Model):
 
 #The object stores information inherent in a text comment associated with a project, a project layer, or a project document
 class Comment(models.Model):
-    project = models.ForeignKey(Project, on_delete = models.CASCADE)
+    project = models.ForeignKey(Project, on_delete = models.CASCADE, related_name="comment")
     layer = models.ForeignKey(Layer, on_delete = models.PROTECT, null=True, blank=True)
     document = models.ForeignKey(ProjectDocument, on_delete = models.SET_NULL, null=True, blank=True)
     text = models.TextField(max_length=1000)
