@@ -142,7 +142,16 @@ class ProjectAPI(viewsets.ModelViewSet):
         nested_serializers = getRelatedFields(model)#Getting all the options for a given model
         return Response({'choices': nested_serializers})#Sending
     
-
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        comments = instance.comment.all()
+        history = instance.history.all()    
+        comments_serializer = CommentSerializer(instance=comments, many=True)   
+        history_serializer = HistoryOfChangeSerializer(instance=history, many=True)
+        return Response({'project': serializer.data,
+                         'comments': comments_serializer.data,
+                         'history': history_serializer.data})
 
     def get_queryset(self):
         if not(self.request.user.is_anonymous):
