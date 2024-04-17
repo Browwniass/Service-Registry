@@ -26,11 +26,8 @@ class ObserverSerializer(serializers.ModelSerializer):
         return data
 
 
-#Sterilizer of the TeamMember model
-class TeamMemberSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = TeamMember
-        fields = "__all__"
+
+
 
 #Sterilizer of the model ProjectEmployeе
 class ProjectEmployeеSerializer(serializers.ModelSerializer):
@@ -42,7 +39,7 @@ class ProjectEmployeеSerializer(serializers.ModelSerializer):
 class PrioritySerializer(serializers.ModelSerializer):
     class Meta:
         model = Priority
-        fields = ["name"]
+        fields = "__all__"
 
 #Sterilizer of the model Project
 class ProjectSerializer(serializers.ModelSerializer):
@@ -53,7 +50,12 @@ class ProjectSerializer(serializers.ModelSerializer):
     #Presentation of projects in a readable form when sending
     def to_representation(self, instance):
         representation = super().to_representation(instance)
-        representation['priority'] = instance.priority.name
+        representation['priority'] = PrioritySerializer(instance=instance.priority).data
+        representation['complexity'] = ProjectComplexitySerializer(instance=instance.complexity).data
+        representation['project_type'] = ProjectTypeSerializer(instance=instance.project_type).data
+        representation['quarter'] = QuarterSerializer(instance=instance.quarter).data
+        representation['state'] = ProjectStateSerializer(instance=instance.state).data
+        representation['stack'] = StackSerializer(instance=instance.stack).data
         return representation
 
     def update(self, instance, validated_data):
@@ -161,14 +163,40 @@ class CommentsFileSerializer(serializers.ModelSerializer):
         model = CommentsFile
         fields ="__all__"
 
-#Sterilizer of the model ProjectDocument
+#Serializer of the model ProjectDocument
 class ProjectDocumentSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProjectDocument
         fields ="__all__"
     
-    #Sterilizer of the model Priority
+#Sterilizer of the model Priority
 class HistoryOfChangeSerializer(serializers.ModelSerializer):
     class Meta:
         model = HistoryOfChange
         fields = "__all__"
+
+#Serializer of the model StackElement
+class StackElementSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StackElement
+        fields = "__all__"
+
+#Serializer of the model Stack
+class StackSerializer(serializers.ModelSerializer):
+    elements = StackElementSerializer(many=True)
+    class Meta:
+        model = Stack
+        fields = "__all__"
+
+
+#Serializer of the TeamMember model
+class TeamMemberSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TeamMember
+        fields = "__all__"
+    
+    #Presentation of projects in a readable form when sending
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation['stack'] = StackSerializer(instance=instance.stack).data
+        return representation
