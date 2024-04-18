@@ -20,12 +20,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-z)an4e)d+v_33_4*$c1tzstwo6pp_p4@d5nfp+luq39_(7oftk'
+SECRET_KEY = '4672#=3zfc)$0$=5mm_lx2@eg#qrscv!pb)dx3p3+mi230nrw5'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['5.35.29.18']
 
 
 # Application definition
@@ -80,9 +80,9 @@ WSGI_APPLICATION = 'service_registry.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'project_catalog',
-        'USER': 'Brownie',
-        'PASSWORD': 'admin',
+        'NAME': 'project_catalog_dev',
+        'USER': 'project_catalog_dev',
+        'PASSWORD': 'yUxKkywqaJwqaiPcft6k',
         'HOST': 'localhost',  # Replace with your PostgreSQL server's address if necessary
         'PORT': '5432',          # Leave empty to use the default PostgreSQL port (usually 5432)
     }
