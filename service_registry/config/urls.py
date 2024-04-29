@@ -16,22 +16,25 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from project_catalog.views import *
+#from project_catalog.views import *
 from rest_framework import routers
 
 
-router = routers.SimpleRouter()
+"""router = routers.SimpleRouter()
 router.register(r'project-list', ProjectAPI)
 router.register(r'layers', LayerAPI)
 router.register(r'users', UserAPI)
 router.register(r'observers', ObserverAPI)
 router.register(r'history', HistoryOfChangeAPI)
-router.register(r'employees', TeamMemberAPIList)
+router.register(r'employees', TeamMemberAPIList)"""
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path("api/", include(router.urls)),
+    path("projects/", include("projects.urls")),
+
+]
+
+""" path("api/", include(router.urls)),   
     path('api/auth/registration/', UserRegistrationView.as_view(), name='user-registration'),
     path('api/auth/login/', UserLoginView.as_view(), name='user-login'),
-    path('api/auth/logout/', UserLogoutView.as_view(), name='user-logout'),
-]
+    path('api/auth/logout/', UserLogoutView.as_view(), name='user-logout'),"""

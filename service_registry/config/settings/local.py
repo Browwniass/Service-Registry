@@ -26,7 +26,7 @@ SECRET_KEY = '4672#=3zfc)$0$=5mm_lx2@eg#qrscv!pb)dx3p3+mi230nrw5'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['www.api.dev.projectcatalog.ru', 'api.dev.projectcatalog.ru']
+#ALLOWED_HOSTS = ['www.api.dev.projectcatalog.ru', 'api.dev.projectcatalog.ru']
 
 
 # Application definition
@@ -40,7 +40,13 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework.authtoken',
-    'project_catalog',
+    'references',
+    'projects',
+    'teams',
+    'logs',
+    'comments',
+    'statuses',
+    
 ]
 
 MIDDLEWARE = [
@@ -51,10 +57,10 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'project_catalog.middleware.RequestMiddleware'
+    #'project_catalog.middleware.RequestMiddleware'
 ]
 
-ROOT_URLCONF = 'service_registry.urls'
+ROOT_URLCONF = 'config.urls'
 
 TEMPLATES = [
     {
@@ -72,7 +78,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'service_registry.wsgi.application'
+WSGI_APPLICATION = 'config.wsgi.application'
 
 
 # Database
@@ -81,9 +87,9 @@ WSGI_APPLICATION = 'service_registry.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'project_catalog_dev',
-        'USER': 'project_catalog_dev',
-        'PASSWORD': 'yUxKkywqaJwqaiPcft6k',
+        'NAME': 'project_catalog_db',
+        'USER': 'Brownie',
+        'PASSWORD': 'admin',
         'HOST': 'localhost',  # Replace with your PostgreSQL server's address if necessary
         'PORT': '5432',          # Leave empty to use the default PostgreSQL port (usually 5432)
     }
@@ -108,7 +114,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-AUTH_USER_MODEL = 'project_catalog.User'
+AUTH_USER_MODEL = 'teams.User'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
