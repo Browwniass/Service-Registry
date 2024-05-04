@@ -2,6 +2,7 @@ from django.db.models import Model, ForeignKey, CharField, URLField, DateField, 
 from logs.middleware import current_request
 from statuses.models.layer_status import ChangeLayerStatus
 from comments.models import Comment
+from django.contrib.contenttypes.fields import GenericRelation
 
 #The object stores information characterizing a significant part of the project that is allocated to a separate product.
 class Layer(Model):
@@ -11,10 +12,11 @@ class Layer(Model):
     link_to_project_in_git = URLField(null=True, blank=True)
     link_to_project_in_ser_reg = URLField(null=True, blank=True)
     layer_type = ForeignKey('references.LayerType', on_delete=PROTECT)
-    state = ForeignKey('statuses.Status', on_delete = PROTECT)
+    status = ForeignKey('statuses.Status', on_delete = PROTECT)
     expected_testbed_start_date = DateField(null=True, blank=True)
     complexity = ForeignKey('references.Complexity', on_delete=PROTECT)
     stack = ForeignKey('projects.Stack', on_delete = PROTECT)
+    history = GenericRelation("logs.HistoryOfChange")
 
     class Meta:
         app_label = 'projects'
@@ -24,20 +26,22 @@ class Layer(Model):
         #Logging project with an updated "state"
 
         if self.pk is not None:
-            old_state = Layer.objects.get(pk=self.pk).state
-            if old_state != self.state:
-                #Create comment instance
-                comment_instance = Comment.objects.create(
-                    project=self.project,
-                    layer = self,
-                    text = comment,
-                    created = current_request().user,
-                )
-                
+            old_status = Layer.objects.get(pk=self.pk).status
+            if old_status != self.status:
+                print(comment)
+                if comment == '':
+                    comment_instance = None
+                else: 
+                    comment_instance = Comment.objects.create(
+                        project=self.project,
+                        layer = self,
+                        text = comment,
+                        created = current_request().user,
+                    )
                 #Create ChangeLayerState instance for logging
                 new_state_inst= ChangeLayerStatus(
                     layer=self,
-                    state=self.state,
+                    status=self.status,
                     comment=comment_instance,
                     installed=current_request().user
                 )

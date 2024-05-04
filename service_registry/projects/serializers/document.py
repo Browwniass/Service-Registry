@@ -1,11 +1,11 @@
 from rest_framework import serializers
-from models.document import ProjectDocument
+from projects.models.document import ProjectDocument
 
 #List Serilizer of the model ProjectDocument
 class ProjectDocumentListSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProjectDocument
-        fields =['project', 'name', 'file_type', 'file', 'file_ver']
+        fields =['id', 'project', 'name', 'file_type', 'file', 'file_ver']
 
 
 #Detail Serilizer of the model ProjectDocument

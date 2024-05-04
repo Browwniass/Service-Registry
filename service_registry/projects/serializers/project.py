@@ -36,6 +36,7 @@ class ProjectSerializer(serializers.ModelSerializer):
     
     def update(self, instance, validated_data):
         try:
+            print(self.initial_data)
             comment = self.initial_data['comment']
         except KeyError:
             comment=""

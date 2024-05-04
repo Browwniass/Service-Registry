@@ -8,7 +8,7 @@ class Stackholder(Model):
     organization = CharField(max_length=200)
     has_information = CharField(max_length=2000)
     contact_information = JSONField()
-    observer = ForeignKey('teams.Viewer', on_delete=SET_NULL, blank=True, null=True)
+    viewer = ForeignKey('teams.Viewer', on_delete=SET_NULL, blank=True, null=True)
     
     class Meta:
         app_label = 'teams'
