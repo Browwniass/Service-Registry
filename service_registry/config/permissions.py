@@ -34,7 +34,6 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
         return (request.user.role == User.ROLE_CHOICES[0][0]) or (is_member or is_stackholder)
 
     def has_object_permission(self, request, view, obj):
-        print("Объект один")
         # Read permissions are allowed to any request,
         # so we'll always allow GET, HEAD or OPTIONS requests.
         if request.method in permissions.SAFE_METHODS:

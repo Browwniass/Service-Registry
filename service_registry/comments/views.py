@@ -29,8 +29,11 @@ class CommentModelView(viewsets.ModelViewSet):
         
         if 'layer_pk' in self.kwargs:
             return Comment.objects.filter(layer=self.kwargs['layer_pk'])
+    
+    def perform_create(self, serializer):
+        serializer.save(created_id=self.request.user.pk)
         
-        #Hiding a "deleted" comment
+    #Hiding a "deleted" comment
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
         instance.is_hidden = True

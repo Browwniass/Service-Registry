@@ -9,18 +9,16 @@ from teams.serializers.user import UserSerializer
 class CommentListSerializer(serializers.ModelSerializer):
     layer_id = serializers.PrimaryKeyRelatedField(queryset=Layer.objects.all(), source='layer', write_only=True)
     layer = LayerSerializer(read_only=True)
-    created_id = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), source='created', write_only=True)
     created = UserSerializer(read_only=True)
     
     class Meta:
         model = Comment
-        fields = ['id', 'project', 'document', 'text', 'created', 'created_id', 'layer', 'layer_id']
-    
+        fields = ['id', 'project', 'document', 'created', 'text', 'layer', 'layer_id']
+        
 #Serializer of the model Comment
 class CommentDetailSerializer(serializers.ModelSerializer):
     layer_id = serializers.PrimaryKeyRelatedField(queryset=Layer.objects.all(), source='layer', write_only=True)
     layer = LayerSerializer(read_only=True)
-    created_id = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), source='created', write_only=True)
     created = UserSerializer(read_only=True)
 
     class Meta:
