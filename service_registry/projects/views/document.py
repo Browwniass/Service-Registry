@@ -1,7 +1,7 @@
 from rest_framework import viewsets
 from projects.models.document import ProjectDocument
 from projects.serializers.document import ProjectDocumentListSerializer, ProjectDocumentDetailSerializer 
-from config.permissions import IsMemberOwnerOrReadOnly
+from config.permissions import IsAdminOrReadOnly
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from teams.models.user import User
 from teams.models.member import Member
@@ -9,7 +9,7 @@ from teams.models.member import Member
 class ProjectDocumentModelView(viewsets.ModelViewSet):
     queryset = ProjectDocument.objects.all()
     serializer_class = ProjectDocumentListSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly, IsMemberOwnerOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnly, IsAdminOrReadOnly]
 
     def get_serializer_class(self):
         user = self.request.user

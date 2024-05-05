@@ -2,7 +2,7 @@ from rest_framework import permissions
 from teams.models.user import User
 from teams.models.member import Member
 from teams.models.stackholder import Stackholder
-
+from projects.models.layer import Layer
 
 class IsAdminOrReadOnly(permissions.BasePermission):
     def has_permission(self, request, view):
@@ -25,8 +25,16 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
     Object-level permission to only allow owners of an object to edit it.
     Assumes the model instance has an `owner` attribute.
     """
+    def has_permission(self, request, view):
+        if request.method in permissions.SAFE_METHODS or 'pk' in view.kwargs:
+            return True
+        is_member = Member.objects.filter(project__id=request.data['project'], worker__user=request.user).exists()
+        is_stackholder = Stackholder.objects.filter(project__id=request.data['project'], viewer__user=request.user).exists()
+
+        return (request.user.role == User.ROLE_CHOICES[0][0]) or (is_member or is_stackholder)
 
     def has_object_permission(self, request, view, obj):
+        print("Объект один")
         # Read permissions are allowed to any request,
         # so we'll always allow GET, HEAD or OPTIONS requests.
         if request.method in permissions.SAFE_METHODS:
@@ -35,7 +43,7 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
         is_stackholder = Stackholder.objects.filter(project=obj.project, viewer__user=request.user).exists()
         # Instance must have an attribute named `user`.
         return (request.user.role == User.ROLE_CHOICES[0][0]) or ((is_member or is_stackholder) and (obj.created == request.user))
-    
+        
 class IsMemberOwnerOrReadOnly(permissions.BasePermission):
     """
     Object-level permission to only allow owners of an object to edit it.
@@ -47,8 +55,9 @@ class IsMemberOwnerOrReadOnly(permissions.BasePermission):
         # so we'll always allow GET, HEAD or OPTIONS requests.
         if request.method in permissions.SAFE_METHODS:
             return True
-        print(obj.project)
+
+        # Instance must have an attribute named `user`.
         is_member = Member.objects.filter(project=obj.project, worker__user=request.user).exists()
         
-        # Instance must have an attribute named `user`.
+        
         return (request.user.role == User.ROLE_CHOICES[0][0]) or is_member
