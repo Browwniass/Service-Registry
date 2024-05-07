@@ -6,3 +6,9 @@ class ComplexitySerializer(serializers.ModelSerializer):
         model = Complexity 
         fields = "__all__"
     
+class ComplexityChoicesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Complexity 
+        fields = "__all__"
+        read_only_fields = ('name', 'description', 'color')
+    

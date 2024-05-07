@@ -7,6 +7,7 @@ from statuses.views.project_status import ChangeProjectStatusModelView
 from statuses.views.layer_status import ChangeLayerStatusModelView
 from projects.views.layer import LayerModelView
 from teams.views.stackholder import StackholderModelView
+from projects.views.stack import StackChoicesModelView
 from logs.views import HistoryOfChangeModelView
 from rest_framework import routers
 from django.urls import include
@@ -49,4 +50,5 @@ urlpatterns = [
     path("adminn/", include(router_admin.urls)),
     path(r'adminn/', include(viewer_admin_router.urls)),
     path(r'adminn/', include(admin_layer_router.urls)),
+    path('stacks/', StackChoicesModelView.as_view({'get': 'list'}), name='stacks' )
 ]

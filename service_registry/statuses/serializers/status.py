@@ -6,3 +6,9 @@ class StatusSerializer(serializers.ModelSerializer):
         model = Status 
         fields = "__all__"
     
+class StatusChoicesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Status 
+        fields = "__all__"
+        read_only_fields = ('name', 'description', 'color')
+    

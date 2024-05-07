@@ -5,4 +5,10 @@ class ProjectTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProjectType 
         fields = "__all__"
+
+class ProjectTypeChoicesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProjectType 
+        fields = "__all__"
+        read_only_fields = ('name', 'description', 'color')
     

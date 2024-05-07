@@ -32,6 +32,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path("", include("projects.urls")),
     path("", include("teams.urls")),
+    path("", include("references.urls")),
+    path("", include("statuses.urls"))
 
 ]
 

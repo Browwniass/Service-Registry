@@ -14,3 +14,11 @@ class StackSerializer(serializers.ModelSerializer):
         model = Stack
         fields ="__all__"
 
+
+#Detail Serilizer of the model Stack
+class StackChoicesSerializer(serializers.ModelSerializer):
+    elements = StackElementSerializer(many=True, read_only=True)
+    class Meta:
+        model = Stack
+        fields = ['name', 'elements']
+        read_only_fields = ['name']

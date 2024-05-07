@@ -7,10 +7,11 @@ from .middleware import current_request
 import json
 from django.utils import timezone
 
+
 @receiver(post_delete)
 @receiver(post_save)
 def log_model_change(sender, instance, **kwargs):
-    if current_request()!=None:
+    if current_request()!=None and not(current_request().user.is_anonymous):
         content_type = ContentType.objects.get_for_model(sender)
         acceptable_apps = ['projects', 'comments', 'teams', 'references']
         if content_type.app_label in acceptable_apps:#Checking for relevance to my models
