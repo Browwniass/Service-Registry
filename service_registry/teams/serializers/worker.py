@@ -21,6 +21,7 @@ class WorkerDetailSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
     stack_id = serializers.PrimaryKeyRelatedField(queryset=Stack.objects.all(), source='stack', write_only=True)
     stack = StackSerializer(read_only=True)
+    
     class Meta:
         model = Worker
         fields = "__all__"
