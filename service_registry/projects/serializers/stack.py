@@ -19,8 +19,7 @@ class StackElementSerializer(serializers.ModelSerializer):
 
 #Detail Serilizer of the model Stack
 class StackSerializer(serializers.ModelSerializer):
-    elements_id = serializers.PrimaryKeyRelatedField(queryset=StackElement.objects.all(), source='elements', many=True, write_only=True)
-    elements = StackElementSerializer(many=True, read_only=True)
+    elements_id = StackElementSerializer(many=True, read_only=True, source='elements')
 
     class Meta:
         model = Stack

@@ -12,7 +12,7 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly
 class CommentModelView(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
     serializer_class = CommentListSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
+    
     
     def get_serializer_class(self):
         user = self.request.user

@@ -1,4 +1,5 @@
 from django.db.models import Model, CharField, ManyToManyField, ForeignKey, DateField, SET_NULL
+from django.contrib.contenttypes.fields import GenericRelation
 
 # The object stores information inherent in the record about the used keyword, language, or library.
 class StackElement(Model):
@@ -16,8 +17,8 @@ class StackElement(Model):
 #The object stores information characterizing a set of libraries, frameworks, and languages used in development.
 class Stack(Model):
     name = CharField(max_length=50, unique=True)
-    elements = ManyToManyField(StackElement)
-    
+    elements = ManyToManyField(StackElement, related_name='elements')
+    history = GenericRelation("logs.HistoryOfChange")
     class Meta:
         app_label = 'projects'
 
