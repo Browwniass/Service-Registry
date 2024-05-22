@@ -7,9 +7,10 @@ from statuses.models.project_status import ChangeProjectStatus
 from comments.models import Comment
 from teams.models.user import User
 from django.contrib.contenttypes.fields import GenericRelation
+from dirtyfields import DirtyFieldsMixin
 
 #The object stores information inherent in the project as an entity in the designed system.
-class Project(Model):
+class Project(DirtyFieldsMixin, Model):
     name = CharField(max_length=100, unique=True)
     short_name = CharField(max_length=50, unique=True)
     domain = CharField(max_length=100, unique=True)
@@ -46,6 +47,7 @@ class Project(Model):
         #Logging project with an updated "status"
         if self.pk is not None:
             old_status = Project.objects.get(pk=self.pk).status
+            #print(f"old: {old_status}\n new: {self.status}")
             if old_status != self.status:
                 #Create comment instance
                 if comment == '':

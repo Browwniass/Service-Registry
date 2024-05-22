@@ -1,9 +1,11 @@
 import re
 from django.db.models import Model, ForeignKey, CharField, TextField, BooleanField, FileField, CASCADE, SET_NULL
 from django.core.exceptions import ValidationError
+from dirtyfields import DirtyFieldsMixin
+
 
 #The object stores information inherent in the project documentation document
-class ProjectDocument(Model):
+class ProjectDocument(DirtyFieldsMixin, Model):
     TYPE_CHOICES =(
         ('t_entry','Введение'),
         ('t_ps','ТЗ'),
@@ -32,20 +34,22 @@ class ProjectDocument(Model):
             raise ValidationError({'file_ver': "Версия указывается при помощи 2-ух чисел разделенных запятой"})
     
     def save(self, *args, **kwargs):
+        self.full_clean()
         #Increasing the document version when it is changed
         if self.pk is not None:
-            old_file = ProjectDocument.objects.get(pk=self.pk).file
-            if old_file == self.file:
+            old = ProjectDocument.objects.get(pk=self.pk)
+            old_file = old.file
+            if old_file != self.file:
                 print(f"Файл обнаружен {self.file_ver+'a'}")
                 number_parts = self.file_ver.split(',')#Separation
-                part1 = int(number_parts[0])
-                part2 = int(number_parts[1])+1#Increase
+                part1 = int(number_parts[0])+1#Increase
+                part2 = int(number_parts[1])
                 full=f"{part1},{part2}"
                 #print(f"Файлs {part1} {part2}")
                 #Updating the document version
                 new_document_inst = ProjectDocument(
                     project=self.project,
-                    prev=self.prev,
+                    prev=old,
                     name=self.name,
                     file_type=self.file_type,
                     file=self.file,
@@ -53,9 +57,11 @@ class ProjectDocument(Model):
                     is_visible=self.is_visible,
                     )
                 new_document_inst.save()
+            else:
+                return super(ProjectDocument, self).save(*args, **kwargs)
         else: 
-            super(ProjectDocument, self).save(*args, **kwargs)
-    
+            return super(ProjectDocument, self).save(*args, **kwargs)
+
     def __str__(self):
         return f"{self.name}[{self.project}]"
     

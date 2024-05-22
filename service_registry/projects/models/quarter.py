@@ -1,7 +1,8 @@
 from django.db.models import Model, CharField, IntegerField, UniqueConstraint
+from dirtyfields import DirtyFieldsMixin
 
 
-class Quarter(Model):
+class Quarter(DirtyFieldsMixin, Model):
     QUARTER_CHOICES =(
         ('q1','Q1'),
         ('q2','Q2'),
@@ -17,4 +18,10 @@ class Quarter(Model):
     
     def __str__(self):
         return f"{self.year}[{self.quarter}]"
-       
+    
+    def save(self, *args, **kwargs):
+        if self.pk == None:
+            for choice in self.QUARTER_CHOICES:
+                instance = Quarter(year=self.year, quarter = choice[0])
+                super(Quarter, instance).save(*args, **kwargs)
+        

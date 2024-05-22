@@ -3,9 +3,11 @@ from logs.middleware import current_request
 from statuses.models.layer_status import ChangeLayerStatus
 from comments.models import Comment
 from django.contrib.contenttypes.fields import GenericRelation
+from dirtyfields import DirtyFieldsMixin
+
 
 #The object stores information characterizing a significant part of the project that is allocated to a separate product.
-class Layer(Model):
+class Layer(DirtyFieldsMixin, Model):
     project = ForeignKey('projects.Project', on_delete=CASCADE)
     name = CharField(max_length=20)
     description = CharField(max_length=1000, blank=True)

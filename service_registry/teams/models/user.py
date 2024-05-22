@@ -1,10 +1,11 @@
 from django.contrib.auth.models import AbstractUser
 from django.db.models import EmailField, CharField
 from django.utils.translation import gettext_lazy as _
+from dirtyfields import DirtyFieldsMixin
 
 
 # User Model
-class User(AbstractUser):
+class User(DirtyFieldsMixin, AbstractUser):
     ROLE_CHOICES = (
         ('admin', 'Admin'),
         ('ordinary', 'Ordinary')

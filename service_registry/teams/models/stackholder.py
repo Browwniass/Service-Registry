@@ -1,8 +1,9 @@
 from django.db.models import Model, ForeignKey, CharField, JSONField, SET_NULL, CASCADE
+from dirtyfields import DirtyFieldsMixin
 
 
 #The object stores information characterizing the person making decisions or storing information about the project
-class Stackholder(Model):
+class Stackholder(DirtyFieldsMixin, Model):
     project = ForeignKey('projects.Project', on_delete=CASCADE)
     full_name = CharField(max_length=200)
     organization = CharField(max_length=200)
