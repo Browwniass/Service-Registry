@@ -1,10 +1,11 @@
 from django.db.models import Model, ForeignKey, BooleanField, DateField, PROTECT, CASCADE
 from django.core.exceptions import ValidationError
 from django.utils import timezone
+from dirtyfields import DirtyFieldsMixin
 
 
 #The object stores information inherent to the development team employee
-class Member(Model):
+class Member(DirtyFieldsMixin, Model):
     role = ForeignKey('references.MemberRole', on_delete = PROTECT) 
     project = ForeignKey('projects.Project', on_delete = CASCADE, null=True, blank=True)
     layer = ForeignKey('projects.Layer', on_delete = PROTECT, null=True, blank=True)
@@ -19,7 +20,6 @@ class Member(Model):
         app_label = 'teams'
     
     def __str__(self):
-        print(self.project is None)
         return f"{self.worker}[{self.project}]"
 
     #Project validation

@@ -10,5 +10,5 @@ class MemberRoleChoicesSerializer(serializers.ModelSerializer):
     class Meta:
         model = MemberRole 
         fields = "__all__"
-        read_only_fields = ('name', 'description', 'color')
+        read_only_fields = ('name', 'color')
     

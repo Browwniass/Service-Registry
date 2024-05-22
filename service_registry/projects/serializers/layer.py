@@ -20,11 +20,12 @@ class LayerSerializer(serializers.ModelSerializer):
     complexity = ComplexitySerializer(read_only=True)
     layer_type_id = serializers.PrimaryKeyRelatedField(queryset=LayerType.objects.all(), source='layer_type', write_only=True)
     layer_type = LayerTypeSerializer(read_only=True)
+    project = serializers.SlugRelatedField(slug_field='short_name', read_only=True)
 
     class Meta:
         model = Layer
-        fields = "__all__"
-        
+        fields = '__all__'
+
     def update(self, instance, validated_data):
         try:
             comment = self.initial_data['comment']
@@ -42,3 +43,4 @@ class LayerSerializer(serializers.ModelSerializer):
 
         instance.save(comment=comment)
         return instance
+    

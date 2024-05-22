@@ -9,18 +9,24 @@ from references.serializers.member_role import MemberRoleSerializer
 
 #List Serializer of the Member model
 class MemberListSerializer(serializers.ModelSerializer):
-    layer_id = serializers.PrimaryKeyRelatedField(queryset=Layer.objects.all(), source='layer', write_only=True)
-    layer = LayerSerializer(read_only=True)
     worker_id = serializers.PrimaryKeyRelatedField(queryset=Worker.objects.all(), source='worker', write_only=True)
     worker = WorkerListSerializer(read_only=True)
     role_id = serializers.PrimaryKeyRelatedField(queryset=MemberRole.objects.all(), source='role', write_only=True)
     role = MemberRoleSerializer(read_only=True)
+    
     class Meta:
         model = Member
-        fields = ['id', 'role', 'role_id', 'project', 'layer', 'layer_id', 'worker', 'worker_id', 'date_joining', 'date_termination']
-
+        fields = ['id', 'role', 'role_id', 'project', 'layer', 'worker', 'worker_id', 'date_joining', 'date_termination']
+        read_only_fields = ['project', 'layer']
+        
 #Detail Serializer of the Member model
 class MemberDetailSerializer(serializers.ModelSerializer):
+    worker_id = serializers.PrimaryKeyRelatedField(queryset=Worker.objects.all(), source='worker', write_only=True)
+    worker = WorkerListSerializer(read_only=True)
+    role_id = serializers.PrimaryKeyRelatedField(queryset=MemberRole.objects.all(), source='role', write_only=True)
+    role = MemberRoleSerializer(read_only=True)
+
     class Meta:
         model = Member
         fields = "__all__"
+        read_only_fields = ['project', 'layer']

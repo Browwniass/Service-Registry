@@ -7,24 +7,22 @@ from teams.serializers.user import UserSerializer
 
 #Serializer of the model Comment
 class CommentListSerializer(serializers.ModelSerializer):
-    layer_id = serializers.PrimaryKeyRelatedField(queryset=Layer.objects.all(), source='layer', write_only=True)
-    layer = LayerSerializer(read_only=True)
     created = UserSerializer(read_only=True)
     
     class Meta:
         model = Comment
-        fields = ['id', 'project', 'document', 'created', 'text', 'layer', 'layer_id']
+        fields = ['id', 'project', 'document', 'created', 'text', 'date_creation', 'date_last_change', 'project']
+        read_only_fields = ['date_creation', 'date_last_change', 'project']
+
         
 #Serializer of the model Comment
 class CommentDetailSerializer(serializers.ModelSerializer):
-    layer_id = serializers.PrimaryKeyRelatedField(queryset=Layer.objects.all(), source='layer', write_only=True)
-    layer = LayerSerializer(read_only=True)
     created = UserSerializer(read_only=True)
 
     class Meta:
         model = Comment
-        fields = "__all__"
-        read_only_fields = ['date_creation', 'date_delete', 'date_last_change']
+        exclude = ['layer', 'project']
+        read_only_fields = ['date_creation', 'date_delete', 'date_last_change', 'project']
         
 #Serializer of the model File
 class FileSerializer(serializers.ModelSerializer):

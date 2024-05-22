@@ -35,8 +35,8 @@ class ProjectSerializer(serializers.ModelSerializer):
         fields = "__all__"
     
     def update(self, instance, validated_data):
+        
         try:
-            print(self.initial_data)
             comment = self.initial_data['comment']
         except KeyError:
             comment=""
@@ -49,7 +49,7 @@ class ProjectSerializer(serializers.ModelSerializer):
                 m2m_fields.append((attr, value))
             else:
                 setattr(instance, attr, value)
-
+        
         instance.save(comment=comment)
         return instance
     
@@ -58,3 +58,10 @@ class ProjectSerializer(serializers.ModelSerializer):
         if not(re.match(reg, value)):
             raise serializers.ValidationError("Версия указывается при помощи 2-ух чисел разделенных запятой")
         return value
+
+class ProjectChoiceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Project 
+        fields = ['id', 'short_name']
+        read_only_field = ['short_name']
+

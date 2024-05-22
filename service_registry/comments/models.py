@@ -1,9 +1,10 @@
 from django.db.models import Model, ForeignKey, DateTimeField, TextField, BooleanField, CharField, FileField, PROTECT, CASCADE, SET_NULL
 from django.core.exceptions import ValidationError
+from dirtyfields import DirtyFieldsMixin
 
 
 #The object stores information inherent in a text comment associated with a project, a project layer, or a project document
-class Comment(Model):
+class Comment(DirtyFieldsMixin, Model):
     project = ForeignKey('projects.Project', on_delete = CASCADE, related_name="comment")
     layer = ForeignKey('projects.Layer', on_delete = PROTECT, null=True, blank=True)
     document = ForeignKey('projects.ProjectDocument', on_delete = SET_NULL, null=True, blank=True)
@@ -18,7 +19,7 @@ class Comment(Model):
         return f"{self.created}[{self.date_creation}:{self.project}]"
     
 #The object stores information inherent in the history of changes in the project status
-class File(Model):
+class File(DirtyFieldsMixin, Model):
     comment = ForeignKey(Comment, on_delete = CASCADE)
     name = CharField(max_length=15)
     file = FileField(upload_to='uploads/Comments/File')

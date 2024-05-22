@@ -4,14 +4,15 @@ from logs.models import HistoryOfChange
 from logs.serializers import HistoryOfChangeSerializer
 from projects.models.project import Project
 from projects.models.layer import Layer
-from config.permissions import ReadOnly, AdminOnly
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from config.permissions import ReadOnly, AdminOnly, ViewerIsAllowed
+from rest_framework.permissions import IsAuthenticated
 
 
 class NestedHistoryOfChangeModelView(viewsets.ReadOnlyModelViewSet):
     queryset = HistoryOfChange.objects.all()
     serializer_class = HistoryOfChangeSerializer
-    permission_classes = [ReadOnly]
+    permission_classes = [IsAuthenticated, ReadOnly, ViewerIsAllowed]
+    
 
     def get_queryset(self):
         if 'project_pk' in self.kwargs:
@@ -26,6 +27,5 @@ class NestedHistoryOfChangeModelView(viewsets.ReadOnlyModelViewSet):
 class FullHistoryOfChangeModelView(viewsets.ReadOnlyModelViewSet):
     queryset = HistoryOfChange.objects.all()
     serializer_class = HistoryOfChangeSerializer
-    permission_classes = [AdminOnly, ReadOnly]
-
+    permission_classes = [IsAuthenticated, AdminOnly]
     
