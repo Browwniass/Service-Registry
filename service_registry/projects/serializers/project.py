@@ -25,7 +25,7 @@ class ProjectSerializer(serializers.ModelSerializer):
     complexity = ComplexitySerializer(read_only=True)
     project_type_id = serializers.PrimaryKeyRelatedField(queryset=ProjectType.objects.all(), source='project_type', write_only=True)
     project_type = ProjectTypeSerializer(read_only=True)
-    quarter_id = serializers.PrimaryKeyRelatedField(queryset=Quarter.objects.all(), source='quarter', write_only=True)
+    quarter_id = serializers.PrimaryKeyRelatedField(queryset=Quarter.objects.all(), allow_null=True, source='quarter', write_only=True)
     quarter = QuarterSerializer(read_only=True)
     status_id = serializers.PrimaryKeyRelatedField(queryset=Status.objects.all(), source='status', write_only=True)
     status = StatusSerializer(read_only=True)

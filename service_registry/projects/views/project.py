@@ -15,17 +15,16 @@ class ProjectModelView(viewsets.ModelViewSet):
     def get_queryset(self):
         role = (self.request.path).split('/')
         is_viewer_url = 'viewer' in role
-
-        try:
-            viewer = Viewer.objects.get(user=self.request.user)
-        except Viewer.DoesNotExist:
-            return []
-        
         if is_viewer_url:
-            if viewer.is_full == False:# Если Наблюдатель не полный
+            try:
+                viewer = Viewer.objects.get(user=self.request.user)
+            except Viewer.DoesNotExist:
+                return []
+        
+            if viewer.is_full == False: # Если Наблюдатель не полный
                 # Получаем только те проекты, что ему видимы
                 return viewer.project.all()
-        return Project.objects.all()# Иначе все 
+        return Project.objects.all() # Иначе все 
 
 class ProjectChoiceModelView(viewsets.ReadOnlyModelViewSet):
     queryset = Project.objects.all()

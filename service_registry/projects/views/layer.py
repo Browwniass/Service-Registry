@@ -4,11 +4,12 @@ from projects.models.project import Project
 from teams.models.viewer import Viewer
 from projects.serializers.layer import LayerSerializer 
 from config.permissions import IsAdminOrReadOnly, ViewerIsAllowed, IsRoleOwnRoot
+from rest_framework.permissions import IsAuthenticated
 
 class LayerModelView(viewsets.ModelViewSet):
     queryset = Layer.objects.all()
     serializer_class = LayerSerializer
-    permission_classes = [IsAdminOrReadOnly, IsRoleOwnRoot]
+    permission_classes = [IsAuthenticated, IsRoleOwnRoot, IsAdminOrReadOnly, ViewerIsAllowed]
     
     def get_queryset(self):
         if 'project_pk' in self.kwargs:

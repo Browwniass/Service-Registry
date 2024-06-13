@@ -5,7 +5,7 @@ from teams.serializers.viewer import ViewerListSerializer
 
 #Serializer of the model ProjectDocument
 class StackholderSerializer(serializers.ModelSerializer):
-    viewer_id = serializers.PrimaryKeyRelatedField(queryset=Viewer.objects.all(), source='viewer', write_only=True)
+    viewer_id = serializers.PrimaryKeyRelatedField(queryset=Viewer.objects.all(), allow_null=True, source='viewer', write_only=True)
     viewer = ViewerListSerializer(read_only=True)
     
     class Meta:

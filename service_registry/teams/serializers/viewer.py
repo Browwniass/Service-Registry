@@ -24,12 +24,14 @@ class AdminViewerSerializer(serializers.ModelSerializer):
 
     
 class ProjectViewerSerializer(serializers.ModelSerializer):
+    project = ProjectChoiceSerializer(read_only=True, many=True)
     user_id = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), source='user', write_only=True)
     user = UserListSerializer(read_only=True)
 
     class Meta:
         model = Viewer
-        exclude = ['project']
+        fields = '__all__'
+
     
     def validate(self, data):
         if data['is_full'] and len(data['project']) != 0:
