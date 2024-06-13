@@ -39,10 +39,14 @@ class StackModelView(viewsets.ModelViewSet):
 class StackChoicesModelView(viewsets.ReadOnlyModelViewSet):
     queryset = Stack.objects.all()
     serializer_class = StackChoicesSerializer
-
+    permission_classes = [IsAuthenticated]
+    pagination_class = None 
+    
 class StackElementChoicesModelView(viewsets.ReadOnlyModelViewSet):
     queryset = StackElement.objects.all()
     serializer_class = StackElementChoicesSerializer
+    permission_classes = [IsAuthenticated]
+    pagination_class = None 
 
     def get_queryset(self):
         params = self.request.query_params

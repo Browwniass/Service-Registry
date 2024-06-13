@@ -30,7 +30,8 @@ class ProjectChoiceModelView(viewsets.ReadOnlyModelViewSet):
     queryset = Project.objects.all()
     serializer_class = ProjectChoiceSerializer
     pagination_class = None 
-    
+    permission_classes = [IsAuthenticated]
+                          
     def get_queryset(self):
         params = self.request.query_params
         if 'viewer_pk' in params:

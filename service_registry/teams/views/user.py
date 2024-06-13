@@ -92,6 +92,7 @@ class UserChoiceModelView(viewsets.ReadOnlyModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserChoiceSerializer
     pagination_class = None 
+    permission_classes = [IsAuthenticated]
     
     def get_queryset(self):
         params = self.request.query_params
@@ -115,21 +116,26 @@ class BlacklistTokenView(APIView):
 @api_view(['GET'])
 def userRoles(request):
     if request.user.is_authenticated:
-        is_admin = request.user.is_admin
-        worker = Worker.objects.filter(user=request.user)
-        is_viewer = Viewer.objects.filter(user=request.user).exists()
+        if request.user.is_admin:
+            return Response({'role': 'admin'}, status=status.HTTP_200_OK)
         
-        data = {
-            'admin': {'is_admin': is_admin},
-            'is_worker': {'is_worker': worker.exists()},
-            'is_viewer': {'is_viewer': is_viewer}
-        }
+        # Check what user role associated with project
         if 'project' in request.query_params:
             requested_project = request.query_params['project']
-            is_project_stackholder = Stackholder.objects.filter(viewer__user=request.user, project=requested_project).exists()
-            is_project_member = Member.objects.filter(worker__user = request.user, project=requested_project).exists()
-            data.update({'is_project_stackholder': is_project_stackholder, 'is_project_member': is_project_member})
-        return Response(data, status=status.HTTP_200_OK)
+            if Member.objects.filter(worker__user = request.user, project=requested_project, is_approved=True).exists():
+                return Response({'role':"member"}, status=status.HTTP_200_OK)
+            elif Stackholder.objects.filter(viewer__user=request.user, project=requested_project).exists():
+                return Response({'role':"viewer"}, status=status.HTTP_200_OK)
+            else:
+                return Response({'role':"None"}, status=status.HTTP_200_OK)
+            
+        # Getting user highest role    
+        elif Worker.objects.filter(user=request.user).exists:
+            return Response({'role': 'member'}, status=status.HTTP_200_OK)
+        elif Viewer.objects.filter(user=request.user).exists():
+            return Response({'role': 'viewer'}, status=status.HTTP_200_OK)
+        
+        return Response({'role':"None"}, status=status.HTTP_200_OK)
     else:
         return Response(status=status.HTTP_401_UNAUTHORIZED)
 

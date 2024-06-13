@@ -8,6 +8,7 @@ from rest_framework.permissions import IsAuthenticated
 class ComplexityChoicesModelView(viewsets.ReadOnlyModelViewSet):
     queryset = Complexity.objects.all()
     serializer_class = ComplexityChoicesSerializer
+    pagination_class = None 
     
 class ComplexityModelView(viewsets.ModelViewSet):
     queryset = Complexity.objects.all()
