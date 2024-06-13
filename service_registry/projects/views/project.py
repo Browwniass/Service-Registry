@@ -1,6 +1,7 @@
 from rest_framework import viewsets
 from projects.models.project import Project
 from teams.models.viewer import Viewer
+from teams.models.member import Member
 from projects.serializers.project import ProjectSerializer, ProjectChoiceSerializer 
 from config.permissions import IsAdminOrReadOnly, IsRoleOwnRoot
 from rest_framework.permissions import IsAuthenticated
@@ -15,6 +16,7 @@ class ProjectModelView(viewsets.ModelViewSet):
     def get_queryset(self):
         role = (self.request.path).split('/')
         is_viewer_url = 'viewer' in role
+        is_member_url = 'member' in role
         if is_viewer_url:
             try:
                 viewer = Viewer.objects.get(user=self.request.user)
@@ -24,6 +26,11 @@ class ProjectModelView(viewsets.ModelViewSet):
             if viewer.is_full == False: # Если Наблюдатель не полный
                 # Получаем только те проекты, что ему видимы
                 return viewer.project.all()
+        if is_member_url: 
+            if 'filt_member' in self.request.query_params:
+                return Project.objects.filter(member__worker__user=self.request.user, member__is_approved=True)
+            elif 'filt_status' in self.request.query_params:
+                return Project.objects.filter(status=self.request.query_params['filt_status'])
         return Project.objects.all() # Иначе все 
 
 class ProjectChoiceModelView(viewsets.ReadOnlyModelViewSet):
