@@ -1,4 +1,3 @@
-import datetime
 import uuid
 from django.db import models
 from django.contrib.auth.models import AbstractUser
@@ -7,7 +6,6 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 import re
 from django.core.exceptions import ValidationError
-from django.db.models.signals import pre_save
 from django.utils import timezone
 from .middleware import current_request
 
