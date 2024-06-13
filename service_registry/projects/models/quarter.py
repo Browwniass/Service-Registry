@@ -4,13 +4,13 @@ from dirtyfields import DirtyFieldsMixin
 
 class Quarter(DirtyFieldsMixin, Model):
     QUARTER_CHOICES =(
-        ('q1','Q1'),
-        ('q2','Q2'),
-        ('q3','Q3'),
-        ('q4','Q4'),
+        ('Q1','q1'),
+        ('Q2','q2'),
+        ('Q3','q3'),
+        ('Q4','q4'),
     )
     year = IntegerField()
-    quarter = CharField(max_length=4, choices=QUARTER_CHOICES)
+    quarter = CharField(max_length=9, choices=QUARTER_CHOICES)
         
     class Meta:
         app_label = 'projects'
