@@ -20,19 +20,22 @@ class CommentModelView(viewsets.ModelViewSet):
         role = (self.request.path).split('/')
         is_admin_url = 'adminn' in role
 
-        if not(user.is_anonymous) and user.role == User.ROLE_CHOICES[0][0] and is_admin_url:
+        if not(user.is_anonymous) and user.is_admin and is_admin_url:
             return CommentDetailSerializer
         return super().get_serializer_class()
     
     def get_queryset(self):
         if 'project_pk' in self.kwargs:
             user = self.request.user
-            if not(user.is_anonymous) and user.role == User.ROLE_CHOICES[0][0]:
+            if not(user.is_anonymous) and user.is_admin:
                 return Comment.objects.filter(project=self.kwargs['project_pk'])
             return Comment.objects.filter(project=self.kwargs['project_pk'], is_hidden=False)
         
         if 'layer_pk' in self.kwargs:
-            return Comment.objects.filter(layer=self.kwargs['layer_pk'])
+            user = self.request.user
+            if not(user.is_anonymous) and user.is_admin:
+                 return Comment.objects.filter(layer=self.kwargs['layer_pk'])
+            return Comment.objects.filter(layer=self.kwargs['layer_pk'], is_hidden=False)
     
     def perform_create(self, serializer):
         if 'project_pk' in self.kwargs:
