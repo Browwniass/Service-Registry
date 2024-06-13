@@ -9,15 +9,15 @@ from references.serializers.member_role import MemberRoleSerializer
 
 #List Serializer of the Member model
 class MemberListSerializer(serializers.ModelSerializer):
-    worker_id = serializers.PrimaryKeyRelatedField(queryset=Worker.objects.all(), source='worker', write_only=True)
+    #worker_id = serializers.PrimaryKeyRelatedField(queryset=Worker.objects.all(), source='worker', write_only=True)
     worker = WorkerListSerializer(read_only=True)
     role_id = serializers.PrimaryKeyRelatedField(queryset=MemberRole.objects.all(), source='role', write_only=True)
     role = MemberRoleSerializer(read_only=True)
     
     class Meta:
         model = Member
-        fields = ['id', 'role', 'role_id', 'project', 'layer', 'worker', 'worker_id', 'date_joining', 'date_termination']
-        read_only_fields = ['project', 'layer']
+        fields = ['id', 'role', 'role_id', 'is_application', 'project', 'layer', 'worker', 'date_joining', 'date_termination', 'is_approved']
+        read_only_fields = ['date_joining', 'date_termination', 'project', 'layer', 'is_application', 'is_approved']
         
 #Detail Serializer of the Member model
 class MemberDetailSerializer(serializers.ModelSerializer):
