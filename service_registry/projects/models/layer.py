@@ -30,7 +30,6 @@ class Layer(DirtyFieldsMixin, Model):
         if self.pk is not None:
             old_status = Layer.objects.get(pk=self.pk).status
             if old_status != self.status:
-                print(comment)
                 if comment == '':
                     comment_instance = None
                 else: 

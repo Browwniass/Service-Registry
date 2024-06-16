@@ -13,7 +13,7 @@ class LayerModelView(viewsets.ModelViewSet):
     
     def get_queryset(self):
         if 'project_pk' in self.kwargs:
-            return Layer.objects.filter(project=self.kwargs['project_pk'])
+            return Layer.objects.filter(project=self.kwargs['project_pk']).order_by('-id')
         else:
             role = (self.request.path).split('/')
             is_viewer_url = 'viewer' in role
@@ -22,10 +22,10 @@ class LayerModelView(viewsets.ModelViewSet):
                     viewer = Viewer.objects.prefetch_related('project').get(user=self.request.user)
                 except Viewer.DoesNotExist:
                     return []
-                if viewer.is_full == False:
+                if not(viewer.is_full):
                     projects = viewer.project.all()
-                    return Layer.objects.filter(project__in=projects)
-            return Layer.objects.all()
+                    return Layer.objects.filter(project__in=projects).order_by('-id')
+            return Layer.objects.all().order_by('-id')
     
     def perform_create(self, serializer):
         if 'project_pk' in self.kwargs:

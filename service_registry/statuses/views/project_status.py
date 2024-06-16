@@ -6,7 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 
 
 class ChangeProjectStatusModelView(viewsets.ModelViewSet):
-    queryset = ChangeProjectStatus.objects.all()
+    queryset = ChangeProjectStatus.objects.all().order_by('-id')
     serializer_class = ChangeProjectStatusSerializer
     permission_classes = [IsAuthenticated, ReadOnly, ViewerIsAllowed]
 

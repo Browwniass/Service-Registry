@@ -6,7 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 
 
 class ChangeLayerStatusModelView(viewsets.ModelViewSet):
-    queryset = ChangeLayerStatus.objects.all()
+    queryset = ChangeLayerStatus.objects.all().order_by('-id')
     serializer_class = ChangeLayerStatusSerializer
     permission_classes = [IsAuthenticated, ReadOnly, ViewerIsAllowed]
 

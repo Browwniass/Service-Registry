@@ -25,13 +25,13 @@ class ProjectModelView(viewsets.ModelViewSet):
         
             if viewer.is_full == False: # Если Наблюдатель не полный
                 # Получаем только те проекты, что ему видимы
-                return viewer.project.all()
+                return viewer.project.all().order_by('-id')
         if is_member_url: 
             if 'filt_member' in self.request.query_params:
-                return Project.objects.filter(member__worker__user=self.request.user, member__is_approved=True)
+                return Project.objects.filter(member__worker__user=self.request.user, member__is_approved=True).order_by('-id')
             elif 'filt_status' in self.request.query_params:
-                return Project.objects.filter(status=self.request.query_params['filt_status'])
-        return Project.objects.all() # Иначе все 
+                return Project.objects.filter(status=self.request.query_params['filt_status']).order_by('-id')
+        return Project.objects.all().order_by('-id') # Иначе все 
 
 class ProjectChoiceModelView(viewsets.ReadOnlyModelViewSet):
     queryset = Project.objects.all()
@@ -48,7 +48,7 @@ class ProjectChoiceModelView(viewsets.ReadOnlyModelViewSet):
                 return []
             projects = viewer.project.all()
             return Project.objects.exclude(id__in=projects)
-        return Project.objects.all()
+        return Project.objects.all().order_by('-id')
 
     
   

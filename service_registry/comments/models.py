@@ -16,9 +16,9 @@ class Comment(DirtyFieldsMixin, Model):
     is_hidden = BooleanField(default=False) 
     
     def __str__(self):
-        return f"{self.created}[{self.date_creation}:{self.project}]"
+        return f"{self.created}[{self.text}]"
     
-#The object stores information inherent in the history of changes in the project status
+#The object stores information about comments files
 class File(DirtyFieldsMixin, Model):
     comment = ForeignKey(Comment, on_delete = CASCADE)
     name = CharField(max_length=15)

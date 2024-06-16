@@ -29,4 +29,4 @@ class ProjectDocumentModelView(viewsets.ModelViewSet):
         
     def perform_create(self, serializer):
         if 'project_pk' in self.kwargs:
-            serializer.save(project_id = self.kwargs['project_pk'] )
+            serializer.save(project_id = self.kwargs['project_pk']).order_by('-id')

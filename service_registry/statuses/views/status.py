@@ -6,13 +6,13 @@ from rest_framework.permissions import IsAuthenticated
 
 
 class StatusChoicesModelView(viewsets.ReadOnlyModelViewSet):
-    queryset = Status.objects.all()
+    queryset = Status.objects.all().order_by('-id')
     serializer_class = StatusChoicesSerializer
     pagination_class = None 
     permission_classes = [IsAuthenticated]
 
 class StatusModelView(viewsets.ModelViewSet):
-    queryset = Status.objects.all()
+    queryset = Status.objects.all().order_by('-id')
     serializer_class = StatusSerializer
     permission_classes = [IsAuthenticated, AdminOnly]
     pagination_class = None 

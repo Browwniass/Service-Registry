@@ -98,8 +98,8 @@ class UserChoiceModelView(viewsets.ReadOnlyModelViewSet):
         params = self.request.query_params
         if 'not_viewer' in params:
             user_viewers = Viewer.objects.values_list('user_id', flat=True)
-            return User.objects.exclude(id__in=user_viewers)
-        return User.objects.all()
+            return User.objects.exclude(id__in=user_viewers).order_by('-id')
+        return User.objects.all().order_by('-id')
     
 
 class BlacklistTokenView(APIView):
@@ -141,7 +141,7 @@ def userRoles(request):
 
 
 class UserModelView(viewsets.ModelViewSet):
-    queryset = User.objects.all()
+    queryset = User.objects.all().order_by('-id')
     serializer_class = AdminUserSerializer
     permission_classes = [IsAuthenticated, IsRoleOwnRoot, AdminOnly]
     

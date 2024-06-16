@@ -17,9 +17,9 @@ class ViewerModelView(viewsets.ModelViewSet):
     
     def get_queryset(self):
         if 'project_pk' in self.kwargs:
-            return Viewer.objects.filter(project__pk=self.kwargs['project_pk']).all()
+            return Viewer.objects.filter(project__pk=self.kwargs['project_pk']).all().order_by('-id')
 
-        return Viewer.objects.all()
+        return Viewer.objects.all().order_by('-id')
     
     def perform_create(self, serializer):
         if 'project_pk' in self.kwargs:

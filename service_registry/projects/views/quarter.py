@@ -11,10 +11,11 @@ class QuarterModelView(viewsets.ModelViewSet):
     serializer_class = QuarterSerializer
     permission_classes = [IsAuthenticated, AdminOnly]
     
+    
 class QuarterChoicesModelView(viewsets.ReadOnlyModelViewSet):
     queryset = Quarter.objects.all()
     serializer_class = QuarterChoicesSerializer
 
     def get_queryset(self):
         current_year = timezone.localtime(timezone.now()).year
-        return Quarter.objects.filter(year__gte=current_year)
+        return Quarter.objects.filter(year__gte=current_year).order_by('-id')
