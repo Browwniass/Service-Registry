@@ -2,6 +2,7 @@ from django.db.models import Model, ForeignKey, BooleanField, DateField, PROTECT
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 from dirtyfields import DirtyFieldsMixin
+from rest_framework_simplejwt.token_blacklist.models import BlacklistedToken, OutstandingToken
 
 
 #The object stores information inherent to the development team employee
@@ -44,9 +45,10 @@ class Member(DirtyFieldsMixin, Model):
         if self.is_approved:
             self.date_joining = timezone.localtime(timezone.now()).date()
             self.date_termination = None
-        self.full_clean()
         
+        self.full_clean()    
         return super().save(*args, **kwargs)
+    
 
 """        elif self.is_approved == False:
             self.date_termination = timezone.localtime(timezone.now()).date()"""

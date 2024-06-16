@@ -2,6 +2,8 @@ from django.contrib.auth.models import AbstractUser,BaseUserManager
 from django.db.models import EmailField, BooleanField
 from django.utils.translation import gettext_lazy as _
 from dirtyfields import DirtyFieldsMixin
+from rest_framework_simplejwt.token_blacklist.models import BlacklistedToken, OutstandingToken
+from django.core.exceptions import ValidationError
 
 
 class MyUserManager(BaseUserManager):
@@ -55,9 +57,23 @@ class User(DirtyFieldsMixin, AbstractUser):
     class Meta:
         app_label = 'teams'
     
+    def save(self, *args, **kwargs):
+        if self.pk is not None:
+            old_role = User.objects.get(pk=self.pk).is_admin 
+            if old_role != self.is_admin:
+                # Get user refresh Token
+                tokens = OutstandingToken.objects.filter(user=self)
+                for token in tokens:
+                    try:
+                        # Adding each token to the blacklist
+                        BlacklistedToken.objects.get_or_create(token=token)
+                    except Exception as e:
+                        raise ValidationError(f"Error blacklisting token")
+
+        return super().save(*args, **kwargs)
+
 
     def __str__(self):
         return f"{self.email}"
 
          
-    

@@ -26,9 +26,9 @@ class MemberModelView(viewsets.ModelViewSet):
     
     def get_queryset(self):
         if 'project_pk' in self.kwargs:
-            return Member.objects.filter(project=self.kwargs['project_pk'])
+            return Member.objects.filter(project=self.kwargs['project_pk']).order_by('-id')
         elif 'layer_pk' in self.kwargs:
-            return Member.objects.filter(layer=self.kwargs['layer_pk'])
+            return Member.objects.filter(layer=self.kwargs['layer_pk']).order_by('-id')
     
     def perform_create(self, serializer):
         url_list = (self.request.path).split('/')
