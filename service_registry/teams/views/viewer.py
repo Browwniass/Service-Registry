@@ -3,6 +3,7 @@ from teams.models.viewer import Viewer
 from teams.serializers.viewer import AdminViewerSerializer, ProjectViewerSerializer
 from config.permissions import AdminOnly
 from rest_framework.permissions import IsAuthenticated
+from django.db.models import Q
 
 
 class ViewerModelView(viewsets.ModelViewSet):
@@ -13,11 +14,12 @@ class ViewerModelView(viewsets.ModelViewSet):
     def get_serializer_class(self):
         if 'project_pk' in self.kwargs:
             return ProjectViewerSerializer
+        
         return super().get_serializer_class()
     
     def get_queryset(self):
         if 'project_pk' in self.kwargs:
-            return Viewer.objects.filter(project__pk=self.kwargs['project_pk']).all().order_by('-id')
+            return Viewer.objects.filter(Q(project__pk=self.kwargs['project_pk']) | Q(is_full=True)).all().order_by('-id')
 
         return Viewer.objects.all().order_by('-id')
     

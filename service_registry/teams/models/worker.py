@@ -42,6 +42,7 @@ class Worker(DirtyFieldsMixin, Model):
                         raise ValidationError(f"Error blacklisting token")
             
         self.full_clean()
+        
         return super().save(*args, **kwargs)
     
     def delete(self, *args, **kwargs):
@@ -55,9 +56,3 @@ class Worker(DirtyFieldsMixin, Model):
                     raise ValidationError(f"Error blacklisting token")
             
         return super().delete(*args, **kwargs)
-    
-"""    #Worker validation
-    def clean(self):
-        if self.is_archived and self.user.is_active:
-            raise ValidationError("Пользовать архивного члена команды должен обязательно быть неактивным")
-"""

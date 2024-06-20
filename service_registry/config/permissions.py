@@ -8,21 +8,22 @@ from teams.models.worker import Worker
 
 
 class IsRoleOwnRoot(permissions.BasePermission):
+    """
+    Permission that checks whether the user has the ability to call through this root
+    """
     def has_permission(self, request, view):
+        # Getting a role from the root url
         url_list = (request.path).split('/')
         is_admin_url = 'adminn' in url_list
         is_viewer_url = 'viewer' in url_list
         is_member_url = 'member' in url_list
-
+        
+        # Сhecking whether the user has a role by the url that he is going to use
         is_admin = request.user.is_admin == True and is_admin_url
         is_member = Worker.objects.filter(user=request.user).exists() and is_member_url
-        #is_member =  (member.first().is_archived == False) and member.exists() and is_member_url
         is_viewer = Viewer.objects.filter(user=request.user).exists() and is_viewer_url
-        #print(view.serializer_class.Meta.model.__name__)
-        #print(view.que)
-        #allowed_viewer = Viewer.objects.filter(project__id=project_id, worker__user=request.user).exists()
-        return (is_viewer or is_admin or is_member) 
-        #return (is_viewer or is_member or is_admin)
+
+        return is_viewer or is_admin or is_member
     
 
 class IsAdminOrReadOnly(permissions.BasePermission):
@@ -97,10 +98,14 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
         url_list = (request.path).split('/')
         is_viewer_url = 'viewer' in url_list
         
+        # Getting the project id from nested entities 
+        # to check if the user is linked to it
         if 'projects' in url_list: 
             project_id = url_list[url_list.index('projects')+1]
         if 'layers' in url_list: 
             project_id = Project.objects.filter(layer__id=url_list[url_list.index('layers')+1]).first().pk
+        if 'documents' in url_list: 
+            project_id = Project.objects.filter(projectdocument__id=url_list[url_list.index('documents')+1]).first().pk
 
         is_stackholder = Stackholder.objects.filter(project__id=project_id, viewer__user=request.user).exists()
 
@@ -187,7 +192,7 @@ class IsMemberOwnerOrReadOnly(permissions.BasePermission):
 
 class ReadOnlyForAssignedOrAdmin(permissions.BasePermission):
     """
-    Permission for allowing only assigned on project members or stackholders view
+    Permission for allowing only assigned on project members view
     """
     def has_permission(self, request, view):
         url_list = (request.path).split('/') 
@@ -197,8 +202,12 @@ class ReadOnlyForAssignedOrAdmin(permissions.BasePermission):
 
         if 'projects' in url_list: 
             project_id = url_list[url_list.index('projects')+1]
-        if 'layers' in url_list: 
+        elif 'layers' in url_list: 
             project_id = Project.objects.filter(layer__id=url_list[url_list.index('layers')+1]).first().pk
+        elif 'documents' in url_list:
+            if 'pk' not in view.kwargs:
+                return False
+            project_id = Project.objects.filter(projectdocument__id=url_list[url_list.index('documents')+1]).first().pk
 
         is_member = Member.objects.filter(project=project_id, worker__user=request.user, is_approved=True).exists()
         is_viewer = Viewer.objects.filter(user=request.user, project=project_id).exists()

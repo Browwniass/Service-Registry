@@ -13,7 +13,6 @@ from references.serializers.complexity import ComplexitySerializer
 from references.serializers.project_type import ProjectTypeSerializer
 from statuses.serializers.status import StatusSerializer
 from rest_framework.utils import model_meta
-#Sterilizer of the model Project
 import re
 
 class ProjectSerializer(serializers.ModelSerializer):
@@ -35,14 +34,12 @@ class ProjectSerializer(serializers.ModelSerializer):
         fields = "__all__"
     
     def update(self, instance, validated_data):
-        
         try:
             comment = self.initial_data['comment']
         except KeyError:
             comment=""
 
         info = model_meta.get_field_info(instance)
-
         m2m_fields = []
         for attr, value in validated_data.items():
             if attr in info.relations and info.relations[attr].to_many:
@@ -51,12 +48,14 @@ class ProjectSerializer(serializers.ModelSerializer):
                 setattr(instance, attr, value)
         
         instance.save(comment=comment)
+
         return instance
     
     def validate_version(self, value):
         reg = r'^\d+,\d+$'
         if not(re.match(reg, value)):
             raise serializers.ValidationError("Версия указывается при помощи 2-ух чисел разделенных запятой")
+        
         return value
 
 class ProjectChoiceSerializer(serializers.ModelSerializer):

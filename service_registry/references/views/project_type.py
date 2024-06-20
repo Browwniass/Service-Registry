@@ -9,6 +9,7 @@ class ProjectTypeChoicesModelView(viewsets.ReadOnlyModelViewSet):
     queryset = ProjectType.objects.all().order_by('-id')
     serializer_class = ProjectTypeChoicesSerializer
 
+
 class ProjectTypeModelView(viewsets.ModelViewSet):
     queryset = ProjectType.objects.all().order_by('-id')
     serializer_class = ProjectTypeSerializer

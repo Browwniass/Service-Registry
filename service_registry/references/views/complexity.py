@@ -10,6 +10,7 @@ class ComplexityChoicesModelView(viewsets.ReadOnlyModelViewSet):
     serializer_class = ComplexityChoicesSerializer
     pagination_class = None 
     
+    
 class ComplexityModelView(viewsets.ModelViewSet):
     queryset = Complexity.objects.all().order_by('-id')
     serializer_class = ComplexitySerializer  

@@ -68,6 +68,7 @@ class Project(DirtyFieldsMixin, Model):
                 new_status_inst.save()
 
         self.full_clean()
+        
         return super().save(*args, **kwargs)
 
 

@@ -22,16 +22,19 @@ class ProjectModelView(viewsets.ModelViewSet):
                 viewer = Viewer.objects.get(user=self.request.user)
             except Viewer.DoesNotExist:
                 return []
-        
-            if viewer.is_full == False: # Если Наблюдатель не полный
-                # Получаем только те проекты, что ему видимы
+            # If the Viewer is not complete,
+            # we get only those projects that are visible to him
+            if viewer.is_full == False: 
                 return viewer.project.all().order_by('-id')
         if is_member_url: 
+            # Sorting by the projects in which the member is a member
             if 'filt_member' in self.request.query_params:
                 return Project.objects.filter(member__worker__user=self.request.user, member__is_approved=True).order_by('-id')
+            # Sorting by status field
             elif 'filt_status' in self.request.query_params:
                 return Project.objects.filter(status=self.request.query_params['filt_status']).order_by('-id')
         return Project.objects.all().order_by('-id') # Иначе все 
+
 
 class ProjectChoiceModelView(viewsets.ReadOnlyModelViewSet):
     queryset = Project.objects.all()
@@ -41,6 +44,7 @@ class ProjectChoiceModelView(viewsets.ReadOnlyModelViewSet):
                           
     def get_queryset(self):
         params = self.request.query_params
+        # Output of all projects to which the Viewer is not attached
         if 'viewer_pk' in params:
             try:
                 viewer = Viewer.objects.get(pk=params['viewer_pk'])

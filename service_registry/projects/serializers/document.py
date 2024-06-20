@@ -1,19 +1,20 @@
 from rest_framework import serializers
 from projects.models.document import ProjectDocument
 
-#List Serilizer of the model ProjectDocument
+
 class ProjectDocumentListSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProjectDocument
         fields =['id', 'name', 'file_type', 'file', 'file_ver']
         read_only_fields = ['project', 'prev']
 
-#Detail Serilizer of the model ProjectDocument
+
 class ProjectDocumentDetailSerializer(serializers.ModelSerializer):
     prev = serializers.SlugRelatedField(
         read_only=True,
         slug_field='prev'
-     )
+    )
+
     class Meta:
         model = ProjectDocument
         fields = ['id', 'name', 'file_type', 'file', 'file_ver', 'is_visible', 'prev']

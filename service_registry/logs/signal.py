@@ -22,8 +22,7 @@ def log_model_change(sender, instance, created, **kwargs):
     Signal for saving changes in model.
     When creating a model, saved all of it fields.
     """
-    # Check user model
-    content_type = ContentType.objects.get_for_model(sender)
+    content_type = ContentType.objects.get_for_model(sender)# Check user model
 
     if content_type.app_label in ACCEPTABLE_APPS or content_type.model in EXCEPTION_MODELS: # Checking if its signal belong to tracked models
         instance.is_created = created
@@ -32,11 +31,11 @@ def log_model_change(sender, instance, created, **kwargs):
             new_dict = {} # new dict
             for field, value in changed_fields.items():
                 new_dict[field] = getattr(instance, field)
-
             instance_dict = {'action': 'PUT', 'changes': new_dict}       
         elif created:
             if  sender.__name__ in M2M_MODELS:
                 return # Full instance data can be saved in m2m_changed
+            
             # Writing changes in dict, model info, making values readable using the meta method for models
             instance_dict = {'action': 'CREATE' , 'changes': {field.name: getattr(instance, field.name) for field in instance._meta.fields}}
             instance.is_created = False
@@ -98,13 +97,7 @@ def log_m2m_change(sender, instance, action, **kwargs):
                 val = instance.history.get(pk=key) # Get HistoryOfChange model
                 dict_val = json.loads(val.value)
                 dict_val['changes']['elements'] = model_to_dict(instance)['elements']
+
                 json_data = json.dumps(dict_val, default=str, ensure_ascii=False)
                 val.value = json_data # Updating m2m field for last history instance
                 val.save()
-
-
-
-"""            else:
-                instance_dict = {'action': 'PUT' , 'changes': model_to_dict(instance)['elements']}
-                json_data = json.dumps(instance_dict, default=str, ensure_ascii=False)
-                HistoryOfChange.objects.create(content_object=instance, value=json_data, changer=current_request().user, date=timezone.localtime(timezone.now()))"""

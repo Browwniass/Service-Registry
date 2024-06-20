@@ -25,8 +25,7 @@ class MyUserManager(BaseUserManager):
 
     def create_superuser(self, email, username, password, **other_fields):
         """
-        Creates and saves a superuser with the given email, date of
-        birth and password.
+        Creates and saves a superuser with the given email and password.
         """
         other_fields.setdefault("is_staff", True)
         other_fields.setdefault("is_superuser", True)

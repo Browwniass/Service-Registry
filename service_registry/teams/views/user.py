@@ -29,31 +29,17 @@ class UserRegistrationView(APIView):
             new_viewer = Viewer(user=new_user)
             new_viewer.save()
 
-            refresh = RefreshToken.for_user(new_user) # Создание Refesh и Access
+            # Create Refesh и Access
+            refresh = RefreshToken.for_user(new_user) 
             refresh.payload.update({
                 'user_id': new_user.id,
                 'username': new_user.username
             })
+
             return Response({'data': serializer.data, 'refresh': str(refresh), 
                 'access': str(refresh.access_token)}, status=status.HTTP_201_CREATED)
+        
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-def userRole(request):
-    if request.user.is_authenticated:
-        is_admin = request.user.is_admin
-        is_worker = Worker.objects.filter(user=request.user).exists()
-        #is_member =  (member.first().is_archived == False) and member
-        is_viewer = Viewer.objects.filter(user=request.user).exists()
-        is_stackholder = Stackholder.objects.filter(viewer__user=request.user).exists()
-        data = {
-            'admin': {'is_admin': is_admin},
-            'is_worker': {'is_worker': is_worker},
-            'is_viewer': {'is_viewer': is_viewer, 'is_stackholder': is_stackholder}
-        }
-        return data
-    else:
-        return Response(status=status.HTTP_401_UNAUTHORIZED)
 
 
 class UserLoginView(ObtainAuthToken):
@@ -63,7 +49,6 @@ class UserLoginView(ObtainAuthToken):
 
         user = authenticate(request, email=email, password=password)
         if user is not None:
-            #login(request, user)
             refresh = RefreshToken.for_user(user)
 
             refresh.payload.update({
@@ -75,18 +60,6 @@ class UserLoginView(ObtainAuthToken):
         else:
             return Response({'message': 'Invalid email or password'}, status=status.HTTP_401_UNAUTHORIZED)
 
-
-class UserLogoutView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def post(self, request):
-        #print(request.headers) 
-        token_key = request.auth.key
-        token = Token.objects.get(key=token_key)
-        token.delete()
-
-        return Response({'detail': 'Successfully logged out.'})
-    
 
 class UserChoiceModelView(viewsets.ReadOnlyModelViewSet):
     queryset = User.objects.all()

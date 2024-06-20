@@ -2,7 +2,6 @@ from rest_framework import viewsets
 from projects.models.stack import Stack, StackElement
 from projects.serializers.stack import StackChoicesSerializer, StackElementChoicesSerializer, StackSerializer, StackElementSerializer
 from config.permissions import AdminOnly
-from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated
 
 
@@ -26,7 +25,6 @@ class StackElementModelView(viewsets.ModelViewSet):
             stack = Stack.objects.get(pk=self.kwargs['stack_pk'])
             new_element = serializer.save()
             stack.elements.add(new_element)
-            #print(ints.elements.all())
         else:
             serializer.save()
     
@@ -36,12 +34,14 @@ class StackModelView(viewsets.ModelViewSet):
     serializer_class = StackSerializer
     permission_classes = [IsAuthenticated, AdminOnly]
 
+
 class StackChoicesModelView(viewsets.ReadOnlyModelViewSet):
     queryset = Stack.objects.all()
     serializer_class = StackChoicesSerializer
     permission_classes = [IsAuthenticated]
     pagination_class = None 
     
+
 class StackElementChoicesModelView(viewsets.ReadOnlyModelViewSet):
     queryset = StackElement.objects.all()
     serializer_class = StackElementChoicesSerializer
@@ -57,4 +57,5 @@ class StackElementChoicesModelView(viewsets.ReadOnlyModelViewSet):
                 return []
             elements = stack.elements.all()
             return StackElement.objects.exclude(id__in=elements)
+        
         return StackElement.objects.all()

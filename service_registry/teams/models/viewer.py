@@ -22,6 +22,7 @@ class Viewer(DirtyFieldsMixin, Model):
                     BlacklistedToken.objects.get_or_create(token=token)
                 except Exception as e:
                     raise ValidationError(f"Error blacklisting token")
+                
         return super().save(*args, **kwargs)
     
     def delete(self, *args, **kwargs):
@@ -32,6 +33,7 @@ class Viewer(DirtyFieldsMixin, Model):
                 BlacklistedToken.objects.get_or_create(token=token)
             except Exception as e:
                 raise ValidationError(f"Error blacklisting token")
+            
         return super().delete(*args, **kwargs)
 
     def __str__(self):

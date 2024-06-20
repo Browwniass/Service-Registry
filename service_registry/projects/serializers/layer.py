@@ -10,7 +10,7 @@ from references.serializers.complexity import ComplexitySerializer
 from references.serializers.layer_type import LayerTypeSerializer
 from statuses.serializers.status import StatusSerializer
 
-#Serializer of the model Layer
+
 class LayerSerializer(serializers.ModelSerializer):
     stack_id = serializers.PrimaryKeyRelatedField(queryset=Stack.objects.all(), source='stack', write_only=True)
     stack = StackSerializer(read_only=True)
@@ -27,6 +27,7 @@ class LayerSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def update(self, instance, validated_data):
+        # To catch a comment that can be passed during logging 
         try:
             comment = self.initial_data['comment']
         except KeyError:
@@ -42,5 +43,6 @@ class LayerSerializer(serializers.ModelSerializer):
                 setattr(instance, attr, value)
 
         instance.save(comment=comment)
+        
         return instance
     

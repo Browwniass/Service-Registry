@@ -6,7 +6,6 @@ from django.contrib.contenttypes.fields import GenericRelation
 from dirtyfields import DirtyFieldsMixin
 
 
-#The object stores information characterizing a significant part of the project that is allocated to a separate product.
 class Layer(DirtyFieldsMixin, Model):
     project = ForeignKey('projects.Project', on_delete=CASCADE)
     name = CharField(max_length=20)
@@ -25,8 +24,8 @@ class Layer(DirtyFieldsMixin, Model):
 
     def save(self, *args, **kwargs):
         comment = kwargs.pop('comment', None)
-        #Logging project with an updated "state"
 
+        # Logging project with an updated "state"
         if self.pk is not None:
             old_status = Layer.objects.get(pk=self.pk).status
             if old_status != self.status:
@@ -39,7 +38,7 @@ class Layer(DirtyFieldsMixin, Model):
                         text = comment,
                         created = current_request().user,
                     )
-                #Create ChangeLayerState instance for logging
+                # Create ChangeLayerState instance for logging
                 new_state_inst= ChangeLayerStatus(
                     layer=self,
                     status=self.status,
@@ -49,6 +48,7 @@ class Layer(DirtyFieldsMixin, Model):
                 new_state_inst.save()
 
         self.full_clean()
+        
         return super().save(*args, **kwargs)
     
     def __str__(self):

@@ -9,6 +9,7 @@ class MemberRoleChoicesModelView(viewsets.ReadOnlyModelViewSet):
     queryset = MemberRole.objects.all().order_by('-id')
     serializer_class = MemberRoleChoicesSerializer
 
+
 class MemberRoleModelView(viewsets.ModelViewSet):
     queryset = MemberRole.objects.all().order_by('-id')
     serializer_class = MemberRoleSerializer

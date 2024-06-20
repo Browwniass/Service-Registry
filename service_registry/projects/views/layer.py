@@ -1,6 +1,5 @@
 from rest_framework import viewsets
 from projects.models.layer import Layer
-from projects.models.project import Project
 from teams.models.viewer import Viewer
 from projects.serializers.layer import LayerSerializer 
 from config.permissions import IsAdminOrReadOnly, ViewerIsAllowed, IsRoleOwnRoot
@@ -17,20 +16,22 @@ class LayerModelView(viewsets.ModelViewSet):
         else:
             role = (self.request.path).split('/')
             is_viewer_url = 'viewer' in role
+            # The output for an ordinary Viewer is only those layers whose projects it is associated with
+            # For full users and other roles available all layers 
             if is_viewer_url:
                 try:
                     viewer = Viewer.objects.prefetch_related('project').get(user=self.request.user)
                 except Viewer.DoesNotExist:
                     return []
+                
                 if not(viewer.is_full):
                     projects = viewer.project.all()
                     return Layer.objects.filter(project__in=projects).order_by('-id')
+                
             return Layer.objects.all().order_by('-id')
     
     def perform_create(self, serializer):
         if 'project_pk' in self.kwargs:
-            serializer.save(project_id = self.kwargs['project_pk'] )
-"""        if 'layer_pk' in self.kwargs:
-            project = Project.objects.get(layer__id=self.kwargs['layer_pk'])
-            serializer.save(created_id=self.request.user.pk, layer_id = self.kwargs['layer_pk'], project_id=project.pk)"""
+            serializer.save(project_id = self.kwargs['project_pk'])
+
         
