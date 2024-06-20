@@ -5,7 +5,7 @@ from teams.serializers.user import UserSerializer
 from projects.models.stack import Stack
 from projects.serializers.stack import StackSerializer
 
-#List Serializer of the Worker model
+
 class WorkerListSerializer(serializers.ModelSerializer):
     
     stack_id = serializers.PrimaryKeyRelatedField(queryset=Stack.objects.all(), source='stack', write_only=True)
@@ -18,7 +18,7 @@ class WorkerListSerializer(serializers.ModelSerializer):
         'user_id': {'required': False},
     }
 
-#Detail Serializer of the Worker model
+
 class WorkerDetailSerializer(serializers.ModelSerializer):
     user_id = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), allow_null=True, source='user', write_only=True)
     user = UserSerializer(read_only=True)
@@ -28,5 +28,4 @@ class WorkerDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Worker
         fields = "__all__"
-        extra_kwargs = {
-        'user_id': {'required': False},}
+        extra_kwargs = {'user_id': {'required': False},}

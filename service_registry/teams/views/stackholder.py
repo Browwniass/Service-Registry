@@ -11,7 +11,7 @@ class StackholderModelView(viewsets.ModelViewSet):
     
     def get_queryset(self):
         if 'project_pk' in self.kwargs:
-            return Stackholder.objects.filter(project=self.kwargs['project_pk'])
+            return Stackholder.objects.filter(project=self.kwargs['project_pk']).order_by('-id')
     
     def perform_create(self, serializer):
         if 'project_pk' in self.kwargs:

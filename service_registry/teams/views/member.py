@@ -26,9 +26,9 @@ class MemberModelView(viewsets.ModelViewSet):
     
     def get_queryset(self):
         if 'project_pk' in self.kwargs:
-            return Member.objects.filter(project=self.kwargs['project_pk'])
+            return Member.objects.filter(project=self.kwargs['project_pk']).order_by('-id')
         elif 'layer_pk' in self.kwargs:
-            return Member.objects.filter(layer=self.kwargs['layer_pk'])
+            return Member.objects.filter(layer=self.kwargs['layer_pk']).order_by('-id')
     
     def perform_create(self, serializer):
         url_list = (self.request.path).split('/')
@@ -39,9 +39,9 @@ class MemberModelView(viewsets.ModelViewSet):
             if 'project_pk' in self.kwargs:
                 serializer.save(project_id=self.kwargs['project_pk'], worker=worker, is_application=True)
             elif 'layer_pk' in self.kwargs:
-                #serializer.save(layer_id=self.kwargs['layer_pk'], worker=worker)
                 # Only Admin can put an employee on the layer
                 return Response(status.HTTP_401_UNAUTHORIZED)
+        
         # Аdmin can choose which employee to attach 
         elif 'project_pk' in self.kwargs:
             serializer.save(project_id=self.kwargs['project_pk'])

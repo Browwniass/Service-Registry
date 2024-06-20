@@ -1,8 +1,8 @@
 from django.db.models import Model, ForeignKey, BooleanField, CharField, EmailField, PROTECT, SET_NULL
 from django.utils.translation import gettext_lazy as _
-from projects.models.stack import Stack
 from django.core.exceptions import ValidationError
 from dirtyfields import DirtyFieldsMixin
+from rest_framework_simplejwt.token_blacklist.models import BlacklistedToken, OutstandingToken
 
 
 #The object stores information characterizing the relationship between the project and the employee involved in its creation
@@ -15,10 +15,7 @@ class Worker(DirtyFieldsMixin, Model):
     user = ForeignKey('teams.User', on_delete=SET_NULL, blank=True, null=True, related_name="team_member_account")
     stack = ForeignKey('projects.Stack', on_delete=PROTECT)
     
-    def __init__(self, *args, **kwargs):
-            super().__init__(*args, **kwargs)
-            self.__original_is_archived = self.is_archived
-            
+
     class Meta:
         app_label = 'teams'
     
@@ -32,12 +29,30 @@ class Worker(DirtyFieldsMixin, Model):
             else:
                 self.user.is_active = True
             self.user.save()
+
+            # Only when assigning the role blacklist token
+            if self.pk == None:
+                # Blacklist token after changes in user model
+                tokens = OutstandingToken.objects.filter(user=self.user)
+                for token in tokens:
+                    try:
+                        # Adding each token to the blacklist
+                        BlacklistedToken.objects.get_or_create(token=token)
+                    except Exception as e:
+                        raise ValidationError(f"Error blacklisting token")
+            
         self.full_clean()
+        
         return super().save(*args, **kwargs)
     
-    
-"""    #Worker validation
-    def clean(self):
-        if self.is_archived and self.user.is_active:
-            raise ValidationError("Пользовать архивного члена команды должен обязательно быть неактивным")
-"""
+    def delete(self, *args, **kwargs):
+        if self.user != None:
+            tokens = OutstandingToken.objects.filter(user=self.user)
+            for token in tokens:
+                try:
+                    # Adding each token to the blacklist
+                    BlacklistedToken.objects.get_or_create(token=token)
+                except Exception as e:
+                    raise ValidationError(f"Error blacklisting token")
+            
+        return super().delete(*args, **kwargs)

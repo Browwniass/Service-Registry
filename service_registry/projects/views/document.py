@@ -21,12 +21,15 @@ class ProjectDocumentModelView(viewsets.ModelViewSet):
         
         if not(user.is_anonymous) and user.is_admin and is_admin_url:
             return ProjectDocumentDetailSerializer
+        
         return super().get_serializer_class()
     
     def get_queryset(self):
         if 'project_pk' in self.kwargs:
             return ProjectDocument.objects.filter(project=self.kwargs['project_pk'])
         
+        return ProjectDocument.objects.all().order_by('-id')
+    
     def perform_create(self, serializer):
         if 'project_pk' in self.kwargs:
-            serializer.save(project_id = self.kwargs['project_pk'] )
+            serializer.save(project_id = self.kwargs['project_pk']).order_by('-id')

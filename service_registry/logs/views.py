@@ -18,11 +18,11 @@ class NestedHistoryOfChangeModelView(viewsets.ReadOnlyModelViewSet):
         if 'project_pk' in self.kwargs:
             project_pk = self.kwargs.get('project_pk')
             project = get_object_or_404(Project, pk=project_pk)
-            return project.history.all()
+            return project.history.all().order_by('-id')
         if 'layer_pk' in self.kwargs:
             layer_pk = self.kwargs.get('layer_pk')
             layer = get_object_or_404(Layer, pk=layer_pk)
-            return layer.history.all()
+            return layer.history.all().order_by('-id')
 
 class FullHistoryOfChangeModelView(viewsets.ReadOnlyModelViewSet):
     queryset = HistoryOfChange.objects.all()

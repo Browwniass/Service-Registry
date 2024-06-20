@@ -29,31 +29,17 @@ class UserRegistrationView(APIView):
             new_viewer = Viewer(user=new_user)
             new_viewer.save()
 
-            refresh = RefreshToken.for_user(new_user) # Создание Refesh и Access
+            # Create Refesh и Access
+            refresh = RefreshToken.for_user(new_user) 
             refresh.payload.update({
                 'user_id': new_user.id,
                 'username': new_user.username
             })
+
             return Response({'data': serializer.data, 'refresh': str(refresh), 
                 'access': str(refresh.access_token)}, status=status.HTTP_201_CREATED)
+        
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-def userRole(request):
-    if request.user.is_authenticated:
-        is_admin = request.user.is_admin
-        is_worker = Worker.objects.filter(user=request.user).exists()
-        #is_member =  (member.first().is_archived == False) and member
-        is_viewer = Viewer.objects.filter(user=request.user).exists()
-        is_stackholder = Stackholder.objects.filter(viewer__user=request.user).exists()
-        data = {
-            'admin': {'is_admin': is_admin},
-            'is_worker': {'is_worker': is_worker},
-            'is_viewer': {'is_viewer': is_viewer, 'is_stackholder': is_stackholder}
-        }
-        return data
-    else:
-        return Response(status=status.HTTP_401_UNAUTHORIZED)
 
 
 class UserLoginView(ObtainAuthToken):
@@ -63,7 +49,6 @@ class UserLoginView(ObtainAuthToken):
 
         user = authenticate(request, email=email, password=password)
         if user is not None:
-            #login(request, user)
             refresh = RefreshToken.for_user(user)
 
             refresh.payload.update({
@@ -76,29 +61,18 @@ class UserLoginView(ObtainAuthToken):
             return Response({'message': 'Invalid email or password'}, status=status.HTTP_401_UNAUTHORIZED)
 
 
-class UserLogoutView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def post(self, request):
-        #print(request.headers) 
-        token_key = request.auth.key
-        token = Token.objects.get(key=token_key)
-        token.delete()
-
-        return Response({'detail': 'Successfully logged out.'})
-    
-
 class UserChoiceModelView(viewsets.ReadOnlyModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserChoiceSerializer
     pagination_class = None 
+    permission_classes = [IsAuthenticated]
     
     def get_queryset(self):
         params = self.request.query_params
         if 'not_viewer' in params:
             user_viewers = Viewer.objects.values_list('user_id', flat=True)
-            return User.objects.exclude(id__in=user_viewers)
-        return User.objects.all()
+            return User.objects.exclude(id__in=user_viewers).order_by('-id')
+        return User.objects.all().order_by('-id')
     
 
 class BlacklistTokenView(APIView):
@@ -115,27 +89,32 @@ class BlacklistTokenView(APIView):
 @api_view(['GET'])
 def userRoles(request):
     if request.user.is_authenticated:
-        is_admin = request.user.is_admin
-        worker = Worker.objects.filter(user=request.user)
-        is_viewer = Viewer.objects.filter(user=request.user).exists()
+        if request.user.is_admin:
+            return Response({'role': 'admin'}, status=status.HTTP_200_OK)
         
-        data = {
-            'admin': {'is_admin': is_admin},
-            'is_worker': {'is_worker': worker.exists()},
-            'is_viewer': {'is_viewer': is_viewer}
-        }
+        # Check what user role associated with project
         if 'project' in request.query_params:
             requested_project = request.query_params['project']
-            is_project_stackholder = Stackholder.objects.filter(viewer__user=request.user, project=requested_project).exists()
-            is_project_member = Member.objects.filter(worker__user = request.user, project=requested_project).exists()
-            data.update({'is_project_stackholder': is_project_stackholder, 'is_project_member': is_project_member})
-        return Response(data, status=status.HTTP_200_OK)
+            if Member.objects.filter(worker__user = request.user, project=requested_project, is_approved=True).exists():
+                return Response({'role':"member"}, status=status.HTTP_200_OK)
+            elif Stackholder.objects.filter(viewer__user=request.user, project=requested_project).exists():
+                return Response({'role':"viewer"}, status=status.HTTP_200_OK)
+            else:
+                return Response({'role':"None"}, status=status.HTTP_200_OK)
+            
+        # Getting user highest role    
+        elif Worker.objects.filter(user=request.user).exists:
+            return Response({'role': 'member'}, status=status.HTTP_200_OK)
+        elif Viewer.objects.filter(user=request.user).exists():
+            return Response({'role': 'viewer'}, status=status.HTTP_200_OK)
+        
+        return Response({'role':"None"}, status=status.HTTP_200_OK)
     else:
         return Response(status=status.HTTP_401_UNAUTHORIZED)
 
 
 class UserModelView(viewsets.ModelViewSet):
-    queryset = User.objects.all()
+    queryset = User.objects.all().order_by('-id')
     serializer_class = AdminUserSerializer
     permission_classes = [IsAuthenticated, IsRoleOwnRoot, AdminOnly]
     

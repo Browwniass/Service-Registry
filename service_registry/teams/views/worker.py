@@ -6,7 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 
 
 class WorkerModelView(viewsets.ModelViewSet):
-    queryset = Worker.objects.all()
+    queryset = Worker.objects.all().order_by('-id')
     serializer_class = WorkerDetailSerializer
     permission_classes = [IsAuthenticated, AdminOnly]
 

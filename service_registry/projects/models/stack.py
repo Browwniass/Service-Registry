@@ -3,7 +3,6 @@ from django.contrib.contenttypes.fields import GenericRelation
 from dirtyfields import DirtyFieldsMixin
 
 
-# The object stores information inherent in the record about the used keyword, language, or library.
 class StackElement(DirtyFieldsMixin, Model):
     name = CharField(max_length=50)
     version = CharField(max_length=20)
@@ -17,7 +16,7 @@ class StackElement(DirtyFieldsMixin, Model):
     def __str__(self):
         return f"{self.name}[{self.version}]"
 
-#The object stores information characterizing a set of libraries, frameworks, and languages used in development.
+
 class Stack(DirtyFieldsMixin, Model):
     ENABLE_M2M_CHECK = True
     name = CharField(max_length=50, unique=True)

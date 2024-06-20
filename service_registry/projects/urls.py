@@ -18,7 +18,8 @@ from rest_framework_nested import routers
 
 router = routers.SimpleRouter()
 router.register(r'projects', ProjectModelView)
-#roots for viewer and member
+
+# roots for nested in Projects objects
 viewer_project_router = routers.NestedSimpleRouter(router, r'projects', lookup='project')
 viewer_project_router.register(r'comments', CommentModelView, basename='project-comments')
 viewer_project_router.register(r'members', MemberModelView, basename='project-members')
@@ -29,6 +30,7 @@ viewer_project_router.register(r'status_changes', ChangeProjectStatusModelView, 
 viewer_project_router.register(r'layers', LayerModelView, basename='project-layers')
 viewer_project_router.register(r'viewers', ViewerModelView, basename='project-viewers')
 
+# roots for nested in layers objects
 router.register(r'layers', LayerModelView)
 viewer_layer_router = routers.NestedSimpleRouter(router, r'layers', lookup='layer')
 viewer_layer_router.register(r'comments', CommentModelView, basename='layer-comments')
@@ -36,10 +38,15 @@ viewer_layer_router.register(r'members', MemberModelView, basename='layer-member
 viewer_layer_router.register(r'changes', NestedHistoryOfChangeModelView, basename='layer-changes')
 viewer_layer_router.register(r'status_changes', ChangeLayerStatusModelView, basename='layer-status-change')
 
+# roots for nested in documents objects
+router.register(r'documents', ProjectDocumentModelView)
+viewer_document_router = routers.NestedSimpleRouter(router, r'documents', lookup='document')
+viewer_document_router.register(r'comments', CommentModelView, basename='document-comments')
 
-#roots for viewer and admin 
+# roots only for admin 
 router_admin = routers.SimpleRouter()
 router_admin.register(r'projects', ProjectModelView)
+router_admin.register(r'documents', ProjectDocumentModelView)
 router_admin.register(r'layers', LayerModelView)
 router_admin.register(r'quarters', QuarterModelView)
 router_admin.register(r'changes', FullHistoryOfChangeModelView)
@@ -55,12 +62,15 @@ urlpatterns = [
     path("viewer/", include(router.urls)),
     path(r'viewer/', include(viewer_project_router.urls)),
     path(r'viewer/', include(viewer_layer_router.urls)),
+    path(r'viewer/', include(viewer_document_router.urls)),
     path("member/", include(router.urls)),
     path(r'member/', include(viewer_project_router.urls)),
     path(r'member/', include(viewer_layer_router.urls)),
+    path(r'member/', include(viewer_document_router.urls)),
     path("adminn/", include(router_admin.urls)),
     path(r'adminn/', include(viewer_project_router.urls)),
     path(r'adminn/', include(viewer_layer_router.urls)),
+    path(r'adminn/', include(viewer_document_router.urls)),
     path(r'adminn/', include(admin_stack_router.urls)),
     path('stacks/', StackChoicesModelView.as_view({'get': 'list'})),
     path('choices/quarters/', QuarterChoicesModelView.as_view({'get': 'list'})),

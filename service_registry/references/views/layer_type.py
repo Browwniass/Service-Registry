@@ -6,10 +6,11 @@ from rest_framework.permissions import IsAuthenticated
 
 
 class LayerTypeChoicesModelView(viewsets.ReadOnlyModelViewSet):
-    queryset = LayerType.objects.all()
+    queryset = LayerType.objects.all().order_by('-id')
     serializer_class = LayerTypeChoicesSerializer
+   
     
 class LayerTypeModelView(viewsets.ModelViewSet):
-    queryset = LayerType.objects.all()
+    queryset = LayerType.objects.all().order_by('-id')
     serializer_class = LayerTypeSerializer
     permission_classes = [IsAuthenticated, AdminOnly]  

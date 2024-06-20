@@ -4,7 +4,6 @@ from django.utils import timezone
 from dirtyfields import DirtyFieldsMixin
 
 
-#The object stores information inherent to the development team employee
 class Member(DirtyFieldsMixin, Model):
     role = ForeignKey('references.MemberRole', on_delete = PROTECT) 
     project = ForeignKey('projects.Project', on_delete = CASCADE, null=True, blank=True)
@@ -22,15 +21,14 @@ class Member(DirtyFieldsMixin, Model):
     def __str__(self):
         return f"{self.worker}[{self.project}]"
 
-    #Member validation
+    # Member validation
     def clean(self):
         if self.project is None and self.layer is None:
-            raise ValidationError({'project': "Должен быть указан или проект или Слой"})
-        
+            raise ValidationError({'project': "Either the project or the Layer must be specified"})
         if self.worker.is_archived:
-            raise ValidationError({'worker': "Член команды не может быть добавлен к проекту если является архивным"})
+            raise ValidationError({'worker': "A team member cannot be added to a project if it is archived"})
         
-        #Если этот сотрудник уже на проекте, не давать ему добавиться на него еще раз
+        # If this Member is already on the project, do not let him be added to it again
         if self.project != None and Member.objects.filter(project=self.project, worker=self.worker).exists():
             if not self.pk:
                 raise ValidationError({'project': 'There is already an member with this project'})
@@ -44,9 +42,8 @@ class Member(DirtyFieldsMixin, Model):
         if self.is_approved:
             self.date_joining = timezone.localtime(timezone.now()).date()
             self.date_termination = None
-        self.full_clean()
         
-        return super().save(*args, **kwargs)
+        self.full_clean()    
 
-"""        elif self.is_approved == False:
-            self.date_termination = timezone.localtime(timezone.now()).date()"""
+        return super().save(*args, **kwargs)
+    
